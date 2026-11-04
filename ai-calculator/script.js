@@ -37,15 +37,38 @@ function calculate() {
   display.value = parseFloat(result.toFixed(10)).toString();
 }
 
-function askAI() {
+async function askAI() {
   const question = document.getElementById("aiQuestion").value.trim();
   const answerEl = document.getElementById("aiAnswer");
   if (!question) return;
-  answerEl.textContent = "AI not connected yet. You asked: " + question;
+
+  answerEl.textContent = "Thinking...";
+  try {
+    const res = await fetch("http://localhost:3000/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question })
+    });
+    const data = await res.json();
+    answerEl.textContent = data.answer || data.error || "No answer";
+  } catch (err) {
+    answerEl.textContent = "Could not reach server. Is it running?";
+  }
 }
 
 // --- Keyboard support ---
 document.addEventListener("keydown", (e) => {
+  // NEW: If the user is typing in the AI box, let them type freely!
+  if (e.target.id === "aiQuestion") {
+    // Allow Enter to trigger the AI
+    if (e.key === "Enter") {
+      e.preventDefault();
+      askAI();
+    }
+    return; 
+  }
+
+  // Otherwise, handle calculator keys
   const key = e.key;
   const allowed = "0123456789.+-*/%()";
 
