@@ -1,4 +1,4 @@
-const display = document.getElementById("display");
+﻿const display = document.getElementById("display");
 let memory = 0;
 let history = [];
 let isSecondFunc = false;
@@ -10,25 +10,12 @@ function toggleHistory() { document.getElementById("historyPanel").classList.tog
 function keepOnTop() { document.getElementById("mainApp").classList.toggle("kept-on-top"); }
 
 function switchMode(modeName, btnElement) {
-  // Hide main calculator display when in Graphing mode
-  const displayEl = document.getElementById("display");
-  if (modeName === 'graphing') {
-    displayEl.style.display = "none";
-    setTimeout(resizeCanvas, 50);
-  } else {
-    displayEl.style.display = "block";
-  }
   const titles = { standard: "Standard", scientific: "Scientific", graphing: "Graphing", programmer: "Programmer", date: "Date calculation", currency: "Currency", volume: "Volume", length: "Length", settings: "Settings" };
   document.getElementById("mode-title").innerText = titles[modeName];
   document.querySelectorAll(".mode-content").forEach(el => el.classList.remove("active"));
   document.getElementById(`mode-${modeName}`).classList.add("active");
   document.querySelectorAll(".menu-item").forEach(el => el.classList.remove("active"));
   if(btnElement) btnElement.classList.add("active");
-  
-  // Trigger canvas resize if switching to graph
-  if (modeName === 'graphing') {
-    setTimeout(resizeCanvas, 50);
-  }
   toggleMenu();
 }
 
@@ -62,7 +49,7 @@ function toggleSign() {
 function calculate() {
   const expr = display.value.trim();
   if (!expr) return;
-  let safeExpr = expr.replace(/�/g, '*').replace(/�/g, '/').replace(/-/g, '-');
+  let safeExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
   if (!/^[0-9+\-*/%.() ]+$/.test(safeExpr)) { display.value = "Invalid input"; return; }
   let result;
   try { result = eval(safeExpr); } catch { display.value = "Invalid input"; return; }
