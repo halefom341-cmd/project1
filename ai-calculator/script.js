@@ -1,48 +1,29 @@
-const display = document.getElementById("display");
+﻿const display = document.getElementById("display");
 
-function append(value) {
-  display.value += value;
-}
-
-function clearDisplay() {
-  display.value = "";
-}
-
-function backspace() {
-  display.value = display.value.slice(0, -1);
-}
+function append(value) { display.value += value; }
+function clearDisplay() { display.value = ""; }
+function backspace() { display.value = display.value.slice(0, -1); }
 
 function calculate() {
   const expr = display.value.trim();
   if (!expr) return;
-
-  if (!/^[0-9+\-*/%.() ]+$/.test(expr)) {
-    display.value = "Invalid input";
-    return;
-  }
-
+  if (!/^[0-9+\-*/%.() ]+$/.test(expr)) { display.value = "Invalid input"; return; }
   let result;
-  try {
-    result = eval(expr);
-  } catch {
-    display.value = "Invalid expression";
-    return;
-  }
-
-  if (!Number.isFinite(result)) {
-    display.value = "Undefined";
-    return;
-  }
-
+  try { result = eval(expr); } catch { display.value = "Invalid expression"; return; }
+  if (!Number.isFinite(result)) { display.value = "Undefined"; return; }
   display.value = parseFloat(result.toFixed(10)).toString();
 }
 
 async function askAI() {
   const question = document.getElementById("aiQuestion").value.trim();
   const answerEl = document.getElementById("aiAnswer");
+  const clearBtn = document.getElementById("clearBtn");
+  
   if (!question) return;
 
   answerEl.textContent = "Thinking...";
+  clearBtn.style.display = "none"; // Hide clear button while loading
+
   try {
     const res = await fetch("https://project1-bice-alpha.vercel.app/ask", {
       method: "POST",
@@ -50,42 +31,31 @@ async function askAI() {
       body: JSON.stringify({ question })
     });
     const data = await res.json();
+    
     answerEl.textContent = data.answer || data.error || "No answer";
+    clearBtn.style.display = "block"; // Show clear button when done
   } catch (err) {
     answerEl.textContent = "Could not reach server. Is it running?";
+    clearBtn.style.display = "block";
   }
+}
+
+function clearAI() {
+  document.getElementById("aiQuestion").value = "";
+  document.getElementById("aiAnswer").textContent = "";
+  document.getElementById("clearBtn").style.display = "none";
 }
 
 // --- Keyboard support ---
 document.addEventListener("keydown", (e) => {
-  // NEW: If the user is typing in the AI box, let them type freely!
   if (e.target.id === "aiQuestion") {
-    // Allow Enter to trigger the AI
-    if (e.key === "Enter") {
-      e.preventDefault();
-      askAI();
-    }
+    if (e.key === "Enter") { e.preventDefault(); askAI(); }
     return; 
   }
-
-  // Otherwise, handle calculator keys
   const key = e.key;
   const allowed = "0123456789.+-*/%()";
-
-  if (key.length === 1 && allowed.includes(key)) {
-    e.preventDefault();
-    append(key);
-    return;
-  }
-
-  if (key === "Enter" || key === "=") {
-    e.preventDefault();
-    calculate();
-  } else if (key === "Backspace") {
-    e.preventDefault();
-    backspace();
-  } else if (key === "Escape" || key === "Delete") {
-    e.preventDefault();
-    clearDisplay();
-  }
+  if (key.length === 1 && allowed.includes(key)) { e.preventDefault(); append(key); return; }
+  if (key === "Enter" || key === "=") { e.preventDefault(); calculate(); } 
+  else if (key === "Backspace") { e.preventDefault(); backspace(); } 
+  else if (key === "Escape" || key === "Delete") { e.preventDefault(); clearDisplay(); }
 });

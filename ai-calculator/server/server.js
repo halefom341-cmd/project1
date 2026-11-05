@@ -15,7 +15,15 @@ app.post("/ask", async (req, res) => {
   if (!question) return res.status(400).json({ error: "No question provided" });
 
   try {
-    const prompt = `You are a calculator assistant. Answer the following math question with the numeric answer and one short sentence of explanation. Keep it under 40 words.\n\nQuestion: ${question}`;
+    const prompt = `You are a highly intelligent scientific AI assistant. 
+    Rules for your answers:
+    1. Keep answers concise (under 60 words).
+    2. If the user asks a True/False question, start your answer with "True:" or "False:".
+    3. If the user asks multiple questions at once, use a numbered list (1., 2., etc.) to answer each one clearly.
+    4. If a question is a trick question or lacks a correct option (e.g., "What is 2+2? A) 3 B) 5"), detect this, point out the flaw, and provide the exact correct answer yourself.
+    
+    Question: ${question}`;
+    
     const result = await model.generateContent(prompt);
     const answer = result.response.text();
     res.json({ answer });
@@ -26,7 +34,5 @@ app.post("/ask", async (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running on http://localhost:3000"));
-
-// Export for Vercel with a 60-second timeout
 module.exports = app;
 module.exports.config = { maxDuration: 60 };
