@@ -11,8 +11,8 @@
   <div id="sidebar" class="sidebar">
     <button class="close-btn" onclick="toggleMenu()">✕</button>
     <h2>Calculator</h2>
-    <button class="menu-item active" onclick="switchMode('standard', this)">📏 Standard</button>
-    <button class="menu-item" onclick="switchMode('scientific', this)">🔬 Scientific</button>
+    <button class="menu-item" onclick="switchMode('standard', this)">📏 Standard</button>
+    <button class="menu-item active" onclick="switchMode('scientific', this)">🔬 Scientific</button>
     <button class="menu-item" onclick="switchMode('graphing', this)">📈 Graphing</button>
     <button class="menu-item" onclick="switchMode('programmer', this)">💻 Programmer</button>
     <button class="menu-item" onclick="switchMode('date', this)">📅 Date calculation</button>
@@ -112,9 +112,8 @@
     <!-- Scientific Mode -->
     <div id="mode-scientific" class="mode-content active">
       
-      <!-- The Dynamic Panels -->
+      <!-- Dynamic Panels -->
       <div id="panel-default" class="sci-panel active">
-        <!-- Default rows go here -->
         <div class="sci-row">
           <button onclick="toggleSecond()">2nd</button>
           <button onclick="append('Math.PI')">π</button>
@@ -125,7 +124,7 @@
         <div class="sci-row">
           <button onclick="square()">x²</button>
           <button onclick="reciprocal()">1/x</button>
-          <button onclick="toggleFE()" id="feBtn">F-E</button>
+          <button onclick="toggleFE()">F-E</button>
           <button onclick="append('e+')">exp</button>
           <button onclick="append('%')">mod</button>
         </div>
@@ -168,10 +167,9 @@
       <!-- Dropdowns -->
       <div class="sci-controls">
         <select><option>DEG</option><option>RAD</option><option>GRAD</option></select>
-        <button onclick="toggleFE()" class="fe-small" id="feBtnSmall">F-E</button>
+        <button onclick="toggleFE()" class="fe-small">F-E</button>
         <button class="dropdown-btn" onclick="showPanel('trig')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M3 20h18M12 4v16M12 4l8 16"/></svg>
-          Trigonometry
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M3 20h18M12 4v16M12 4l8 16"/></svg> Trigonometry
         </button>
         <button class="dropdown-btn" onclick="showPanel('func')">
           <i style="font-family:serif; margin-right:4px;">∫</i> Function
@@ -203,25 +201,21 @@
         <button onclick="append(')')">)</button>
         <button onclick="sciFunc('fact')">n!</button>
         <button onclick="append('/')">÷</button>
-
         <button onclick="append('**')">x^y</button>
         <button onclick="append('7')">7</button>
         <button onclick="append('8')">8</button>
         <button onclick="append('9')">9</button>
         <button onclick="append('*')">×</button>
-
         <button onclick="sciFunc('pow10')">10ˣ</button>
         <button onclick="append('4')">4</button>
         <button onclick="append('5')">5</button>
         <button onclick="append('6')">6</button>
         <button onclick="append('-')">−</button>
-
         <button onclick="sciFunc('log')">log</button>
         <button onclick="append('1')">1</button>
         <button onclick="append('2')">2</button>
         <button onclick="append('3')">3</button>
         <button onclick="append('+')">+</button>
-
         <button onclick="sciFunc('ln')">ln</button>
         <button onclick="toggleSign()">+/-</button>
         <button onclick="append('0')">0</button>
