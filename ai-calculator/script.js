@@ -168,3 +168,66 @@ document.addEventListener("keydown", (e) => {
   else if (key === "Backspace") { e.preventDefault(); backspace(); } 
   else if (key === "Escape" || key === "Delete") { e.preventDefault(); clearDisplay(); }
 });
+
+// --- Enhanced Graphing Logic ---
+let isTracing = false;
+let angleMode = "deg"; // Default to degrees
+
+function toggleGraphMode(mode) {
+  document.getElementById("btnGraphMode").classList.toggle("active", mode === "graph");
+  document.getElementById("btnEquationMode").classList.toggle("active", mode === "equation");
+  
+  const panel = document.getElementById("equationPanel");
+  if (mode === "equation") {
+    panel.classList.add("active");
+  } else {
+    panel.classList.remove("active");
+  }
+}
+
+function toggleGraphOptions() {
+  const panel = document.getElementById("graphOptionsPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
+
+function toggleTrace() {
+  isTracing = !isTracing;
+  alert("Trace mode: " + (isTracing ? "ON (Move mouse over graph)" : "OFF"));
+}
+
+// Override the drawGraph function to support Radians/Degrees
+const oldDrawGraph = drawGraph;
+drawGraph = function() {
+  if (document.getElementById("angleMode")) {
+    angleMode = document.getElementById("angleMode").value;
+  }
+  
+  if (document.getElementById("graphCanvas").width === 0) return;
+  
+  // Temporarily replace math functions with wrappers based on angle mode
+  if (angleMode === "deg") {
+    window.Math.sin = function(x) { return Math.sin(x * Math.PI / 180); };
+    window.Math.cos = function(x) { return Math.cos(x * Math.PI / 180); };
+    window.Math.tan = function(x) { return Math.tan(x * Math.PI / 180); };
+  } else {
+    // Restore native Math functions for radians
+    delete window.Math.sin;
+    delete window.Math.cos;
+    delete window.Math.tan;
+  }
+  
+  oldDrawGraph();
+};
+
+// Ensure display hides/shows correctly on mode switch
+const oldSwitchMode = switchMode;
+switchMode = function(modeName, btnElement) {
+  oldSwitchMode(modeName, btnElement);
+  const displayEl = document.getElementById("display");
+  if (modeName === 'graphing') {
+    displayEl.style.display = "none";
+    setTimeout(resizeCanvas, 50);
+  } else {
+    displayEl.style.display = "block";
+  }
+};
