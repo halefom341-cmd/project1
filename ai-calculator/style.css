@@ -35,7 +35,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; 
 .fe-small:hover { color: white; background: transparent; }
 .dropdown-btn { background: transparent; border: none; color: #aaa; font-size: 12px; display: flex; align-items: center; padding: 0 5px; box-shadow: none; }
 .dropdown-btn:hover { color: white; background: transparent; }
-.mode-content { display: none; flex: 1; flex-direction: column; padding: 0 15px 10px 15px; overflow: hidden; }
+.mode-content { display: none; flex: 1; flex-direction: column; padding: 0 15px 10px 15px; overflow: hidden; position: relative; }
 .mode-content.active { display: flex; }
 .sci-panel { display: none; flex-direction: column; gap: 4px; margin-bottom: 4px; flex-shrink: 0; }
 .sci-panel.active { display: flex; }
@@ -77,22 +77,23 @@ button:nth-child(4n), button:nth-child(2), button:nth-child(3) { background: #3d
 #mode-graphing.active {
   display: flex; /* Show when active */
 }
-.graph-top-menu { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; z-index: 10; }
+.graph-top-menu { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; z-index: 10; pointer-events: auto; }
 .graph-toggle { display: flex; background: #2b2b36; border-radius: 8px; padding: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 .graph-toggle button { background: transparent; border: none; color: #aaa; padding: 6px 12px; border-radius: 6px; box-shadow: none; }
 .graph-toggle button.active { background: #007aff; color: white; }
 .graph-tools { display: flex; background: #2b2b36; border-radius: 8px; padding: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); gap: 2px; }
 .graph-tools button { background: transparent; border: none; color: #aaa; padding: 6px 10px; border-radius: 6px; box-shadow: none; }
 .graph-tools button:hover, .graph-tools button.active { background: #3d3d4a; color: white; }
-.graph-equation-panel { position: absolute; top: 60px; left: 15px; width: 250px; background: #2b2b36; border-radius: 8px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10; display: none; }
+.graph-equation-panel { position: absolute; top: 60px; left: 15px; width: 250px; background: #2b2b36; border-radius: 8px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10; display: none; pointer-events: auto; }
 .graph-equation-panel.active { display: block; }
 .eq-input-row { display: flex; align-items: center; background: #1a1a21; padding: 8px 12px; border-radius: 6px; gap: 8px; }
 .eq-input-row input { background: transparent; border: none; color: white; font-size: 18px; outline: none; flex: 1; font-family: 'Courier New', monospace; }
-.graph-options-panel { position: absolute; top: 60px; right: 15px; width: 200px; background: #2b2b36; border-radius: 8px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10; }
+.graph-options-panel { position: absolute; top: 60px; right: 15px; width: 200px; background: #2b2b36; border-radius: 8px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10; pointer-events: auto; }
 .graph-options-panel h3 { margin-top: 0; font-size: 16px; }
 .opt-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
 .opt-row select { background: #1a1a21; color: white; border: none; padding: 5px; border-radius: 4px; }
-.graph-bottom-controls { position: absolute; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 5px; background: #2b2b36; padding: 5px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; }
+.graph-bottom-controls { position: absolute; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 5px; background: #2b2b36; padding: 5px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; pointer-events: auto; }
 .graph-bottom-controls button { background: transparent; border: none; color: #aaa; padding: 8px; border-radius: 6px; box-shadow: none; display: flex; justify-content: center; align-items: center; }
 .graph-bottom-controls button:hover { background: #3d3d4a; color: white; }
-#graphCanvas { width: 100%; height: 100%; display: block; }
+#graphCanvas { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; z-index: 1; pointer-events: auto; }
+

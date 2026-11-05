@@ -13,7 +13,13 @@ function switchMode(modeName, btnElement) {
   const displayEl = document.getElementById("display");
   if (modeName === 'graphing') {
     displayEl.style.display = "none";
-    setTimeout(resizeCanvas, 50);
+    setTimeout(() => {
+      const container = document.getElementById("mode-graphing");
+      const canvas = document.getElementById("graphCanvas");
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      drawGraph();
+    }, 50);
   } else {
     displayEl.style.display = "block";
   }
@@ -233,9 +239,16 @@ switchMode = function(modeName, btnElement) {
   const displayEl = document.getElementById("display");
   if (modeName === 'graphing') {
     displayEl.style.display = "none";
-    setTimeout(resizeCanvas, 50);
+    setTimeout(() => {
+      const container = document.getElementById("mode-graphing");
+      const canvas = document.getElementById("graphCanvas");
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      drawGraph();
+    }, 50);
   } else {
     displayEl.style.display = "block";
   }
 };
+
 
