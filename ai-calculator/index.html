@@ -1,55 +1,90 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="calculator">
-    <input id="display" readonly placeholder="0">
-    <div class="scientific-buttons">
-      <button onclick="append('Math.sin(')">sin</button>
-      <button onclick="append('Math.cos(')">cos</button>
-      <button onclick="append('Math.tan(')">tan</button>
-      <button onclick="append('Math.PI')">p</button>
-      <button onclick="append('Math.sqrt(')">v</button>
-      <button onclick="append('**2')">x�</button>
-      <button onclick="append('**')">x^y</button>
-      <button onclick="append('(')">(</button>
-      <button onclick="append(')')">)</button>
+  <!-- Sidebar Menu -->
+  <div id="sidebar" class="sidebar">
+    <button class="close-btn" onclick="toggleMenu()">✕</button>
+    <h2>Calculator</h2>
+    <button class="menu-item active" onclick="switchMode('standard', this)">📏 Standard</button>
+    <button class="menu-item" onclick="switchMode('scientific', this)">🔬 Scientific</button>
+    <button class="menu-item" onclick="switchMode('programmer', this)">💻 Programmer</button>
+    <button class="menu-item" onclick="switchMode('date', this)">📅 Date calculation</button>
+    <hr>
+    <h2>Converter</h2>
+    <button class="menu-item" onclick="switchMode('currency', this)">💵 Currency</button>
+    <button class="menu-item" onclick="switchMode('volume', this)">📦 Volume</button>
+    <button class="menu-item" onclick="switchMode('length', this)">📏 Length</button>
+  </div>
+
+  <!-- Main App -->
+  <div class="app-container">
+    
+    <!-- Header -->
+    <div class="header">
+      <button class="hamburger" onclick="toggleMenu()">☰</button>
+      <h1 id="mode-title">Standard</h1>
     </div>
-    <div class="buttons">
-      <button onclick="clearDisplay()">C</button>
-      <button onclick="append('%')">%</button>
-      <button onclick="backspace()">?</button>
-      <button onclick="append('/')">/</button>
 
-      <button onclick="append('7')">7</button>
-      <button onclick="append('8')">8</button>
-      <button onclick="append('9')">9</button>
-      <button onclick="append('*')">*</button>
-
-      <button onclick="append('4')">4</button>
-      <button onclick="append('5')">5</button>
-      <button onclick="append('6')">6</button>
-      <button onclick="append('-')">-</button>
-
-      <button onclick="append('1')">1</button>
-      <button onclick="append('2')">2</button>
-      <button onclick="append('3')">3</button>
-      <button onclick="append('+')">+</button>
-
-      <button onclick="append('0')">0</button>
-      <button onclick="append('.')">.</button>
-      <button onclick="calculate()" class="equals">=</button>
+    <!-- Calculator Display -->
+    <div class="display-container">
+      <input id="display" readonly placeholder="0">
     </div>
-    <div class="ai-row">
-      <input id="aiQuestion" placeholder="Ask in words, e.g. 15% of 240">
-      <button onclick="askAI()">Ask AI</button>
+
+    <!-- Modes (Only Standard is visible by default) -->
+    <div id="mode-standard" class="mode-content active">
+      <div class="buttons standard-grid">
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="backspace()">⌫</button>
+        <button onclick="append('%')">%</button>
+        <button onclick="append('/')">÷</button>
+        
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('*')">×</button>
+        
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('-')">−</button>
+        
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="append('+')">+</button>
+        
+        <button onclick="append('0')" style="grid-column: span 2;">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="calculate()" class="equals">=</button>
+      </div>
     </div>
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;"><p id="aiAnswer" style="flex: 1;"></p><button onclick="clearAI()" style="background: #ff3b30; padding: 8px 12px; font-size: 14px; margin-left: 10px; box-shadow: 0 4px 0 #b3241d; display: none;" id="clearBtn">Clear</button></div>
+
+    <!-- Empty Placeholders for other modes -->
+    <div id="mode-scientific" class="mode-content"><p>Scientific features coming next...</p></div>
+    <div id="mode-programmer" class="mode-content"><p>Programmer features coming next...</p></div>
+    <div id="mode-date" class="mode-content"><p>Date calculation coming next...</p></div>
+    <div id="mode-currency" class="mode-content"><p>Currency converter coming next...</p></div>
+    <div id="mode-volume" class="mode-content"><p>Volume converter coming next...</p></div>
+    <div id="mode-length" class="mode-content"><p>Length converter coming next...</p></div>
+
+    <!-- AI Chat (Preserved) -->
+    <div class="ai-container">
+      <div class="ai-row">
+        <input id="aiQuestion" placeholder="Ask AI e.g. 15% of 240">
+        <button onclick="askAI()">Ask AI</button>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <p id="aiAnswer" style="flex: 1; margin: 10px 0 0 0;"></p>
+        <button onclick="clearAI()" style="background: #ff3b30; padding: 8px 12px; font-size: 14px; margin-left: 10px; margin-top: 10px; box-shadow: 0 4px 0 #b3241d; display: none;" id="clearBtn">Clear</button>
+      </div>
+    </div>
+
   </div>
   <script src="script.js"></script>
 </body>
