@@ -68,9 +68,15 @@ function renderHistory() {
 }
 
 // --- Memory Logic ---
-function memoryClear() { memory = 0; }
+function memoryClear() { 
+  memory = 0; 
+  document.getElementById("display").placeholder = "0"; 
+}
 function memoryRecall() { display.value = memory; }
-function memoryStore() { try { memory = eval(display.value) || 0; } catch { memory = 0; } }
+function memoryStore() { 
+  try { memory = eval(display.value) || 0; } catch { memory = 0; } 
+  document.getElementById("display").placeholder = "M"; // Shows M indicator
+}
 function memoryAdd() { try { memory += eval(display.value) || 0; } catch {} }
 function memorySubtract() { try { memory -= eval(display.value) || 0; } catch {} }
 
