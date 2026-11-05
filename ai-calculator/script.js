@@ -1,4 +1,4 @@
-﻿const display = document.getElementById("display");
+const display = document.getElementById("display");
 let memory = 0;
 let history = [];
 
@@ -43,7 +43,7 @@ function reciprocal() { try { let val = eval(display.value); if (val === 0) { di
 function calculate() {
   const expr = display.value.trim();
   if (!expr) return;
-  let safeExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+  let safeExpr = expr.replace(/�/g, '*').replace(/�/g, '/').replace(/-/g, '-');
   if (!/^[0-9+\-*/%.() ]+$/.test(safeExpr)) { display.value = "Invalid input"; return; }
   
   let result;

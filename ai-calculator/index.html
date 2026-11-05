@@ -36,7 +36,6 @@
 
   <!-- Main App -->
   <div class="app-container" id="mainApp">
-    
     <!-- Windows Title Bar -->
     <div class="title-bar">
       <div class="title-text">🧮 Calculator</div>
@@ -74,33 +73,27 @@
         <button onclick="memoryStore()">MS</button>
         <button>Mv</button>
       </div>
-
       <div class="standard-grid">
         <button onclick="append('%')">%</button>
         <button onclick="clearEntry()">CE</button>
         <button onclick="clearDisplay()">C</button>
         <button onclick="backspace()">⌫</button>
-        
         <button onclick="reciprocal()">1/x</button>
         <button onclick="square()">x²</button>
         <button onclick="squareRoot()">²√x</button>
         <button onclick="append('/')">÷</button>
-        
         <button onclick="append('7')">7</button>
         <button onclick="append('8')">8</button>
         <button onclick="append('9')">9</button>
         <button onclick="append('*')">×</button>
-        
         <button onclick="append('4')">4</button>
         <button onclick="append('5')">5</button>
         <button onclick="append('6')">6</button>
         <button onclick="append('-')">−</button>
-        
         <button onclick="append('1')">1</button>
         <button onclick="append('2')">2</button>
         <button onclick="append('3')">3</button>
         <button onclick="append('+')">+</button>
-        
         <button onclick="toggleSign()">+/-</button>
         <button onclick="append('0')">0</button>
         <button onclick="append('.')">.</button>
@@ -108,8 +101,70 @@
       </div>
     </div>
 
-    <!-- Placeholders for other modes -->
-    <div id="mode-scientific" class="mode-content"><p>Scientific features coming next...</p></div>
+    <!-- Scientific Mode -->
+    <div id="mode-scientific" class="mode-content">
+      <div class="sci-controls">
+        <select><option>DEG</option><option>RAD</option><option>GRAD</option></select>
+        <select><option>F-E</option></select>
+        <select style="margin-left:auto"><option>Trigonometry</option></select>
+        <select><option>Function</option></select>
+      </div>
+      
+      <div class="memory-row">
+        <button onclick="memoryClear()">MC</button>
+        <button onclick="memoryRecall()">MR</button>
+        <button onclick="memoryAdd()">M+</button>
+        <button onclick="memorySubtract()">M-</button>
+        <button onclick="memoryStore()">MS</button>
+        <button>Mv</button>
+      </div>
+
+      <div class="sci-grid">
+        <button onclick="sciFunc('2nd')">2nd</button>
+        <button onclick="append('Math.PI')">π</button>
+        <button onclick="append('Math.E')">e</button>
+        <button onclick="clearEntry()">C</button>
+        <button onclick="backspace()">⌫</button>
+
+        <button onclick="square()">x²</button>
+        <button onclick="reciprocal()">1/x</button>
+        <button onclick="sciFunc('abs')">|x|</button>
+        <button onclick="append('e+')">exp</button>
+        <button onclick="append('%')">mod</button>
+
+        <button onclick="squareRoot()">²√x</button>
+        <button onclick="append('(')">(</button>
+        <button onclick="append(')')">)</button>
+        <button onclick="sciFunc('fact')">n!</button>
+        <button onclick="append('/')">÷</button>
+
+        <button onclick="append('**')">x^y</button>
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('*')">×</button>
+
+        <button onclick="sciFunc('pow10')">10ˣ</button>
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('-')">−</button>
+
+        <button onclick="sciFunc('log')">log</button>
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="append('+')">+</button>
+
+        <button onclick="sciFunc('ln')">ln</button>
+        <button onclick="toggleSign()">+/-</button>
+        <button onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="calculate()" class="equals">=</button>
+      </div>
+    </div>
+
+    <!-- Placeholders -->
     <div id="mode-graphing" class="mode-content"><p>Graphing feature coming next...</p></div>
     <div id="mode-programmer" class="mode-content"><p>Programmer features coming next...</p></div>
     <div id="mode-date" class="mode-content"><p>Date calculation coming next...</p></div>
