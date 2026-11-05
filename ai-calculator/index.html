@@ -25,6 +25,15 @@
     <button class="menu-item" onclick="switchMode('settings', this)">⚙️ Settings</button>
   </div>
 
+  <!-- History Panel -->
+  <div id="historyPanel" class="history-panel">
+    <div class="history-header">
+      <h2>History</h2>
+      <button class="close-btn" onclick="toggleHistory()">✕</button>
+    </div>
+    <ul id="historyList"></ul>
+  </div>
+
   <!-- Main App -->
   <div class="app-container" id="mainApp">
     <!-- Windows Title Bar -->
@@ -45,32 +54,178 @@
         <button class="icon-btn" title="Keep on top" onclick="keepOnTop()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4h16v4M4 16v4h16v-4M8 12h8"/></svg>
         </button>
+        <button class="icon-btn" title="History" onclick="toggleHistory()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </button>
       </div>
     </div>
 
-    <!-- Standard Mode (Hidden) -->
+    <!-- Display -->
+    <input id="display" readonly placeholder="0" style="display: none;">
+
+    <!-- Standard Mode -->
     <div id="mode-standard" class="mode-content">
-        <!-- ... (Standard content stays the same) ... -->
+      <div class="memory-row">
+        <button onclick="memoryClear()">MC</button>
+        <button onclick="memoryRecall()">MR</button>
+        <button onclick="memoryAdd()">M+</button>
+        <button onclick="memorySubtract()">M-</button>
+        <button onclick="memoryStore()">MS</button>
+        <div class="mem-dropdown" onclick="toggleMemMenu()">
+            <button>Mv</button>
+            <div id="memMenu" class="mem-menu-content">
+                <div onclick="memoryClear()">MC</div>
+                <div onclick="memoryAdd()">M+</div>
+                <div onclick="memorySubtract()">M-</div>
+                <div onclick="memoryStore()">MS</div>
+            </div>
+        </div>
+      </div>
+      <div class="standard-grid">
+        <button onclick="append('%')">%</button>
+        <button onclick="clearEntry()">CE</button>
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="backspace()">⌫</button>
+        <button onclick="reciprocal()">1/x</button>
+        <button onclick="square()">x²</button>
+        <button onclick="squareRoot()">²√x</button>
+        <button onclick="append('/')">÷</button>
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('*')">×</button>
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('-')">−</button>
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="append('+')">+</button>
+        <button onclick="toggleSign()">+/-</button>
+        <button onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="calculate()" class="equals">=</button>
+      </div>
     </div>
 
-    <!-- Scientific Mode (Hidden) -->
+    <!-- Scientific Mode -->
     <div id="mode-scientific" class="mode-content">
-        <!-- ... (Scientific content stays the same) ... -->
+      <div id="panel-default" class="sci-panel active">
+        <div class="sci-row">
+          <button onclick="toggleSecond()">2nd</button>
+          <button onclick="append('Math.PI')">π</button>
+          <button onclick="append('Math.E')">e</button>
+          <button onclick="clearEntry()">C</button>
+          <button onclick="backspace()">⌫</button>
+        </div>
+        <div class="sci-row">
+          <button onclick="square()">x²</button>
+          <button onclick="reciprocal()">1/x</button>
+          <button onclick="toggleFE()">F-E</button>
+          <button onclick="append('e+')">exp</button>
+          <button onclick="append('%')">mod</button>
+        </div>
+      </div>
+
+      <div id="panel-trig" class="sci-panel">
+        <div class="sci-row">
+          <button onclick="toggleSecond()">2nd</button>
+          <button onclick="appendTrig('sin')">sin</button>
+          <button onclick="appendTrig('cos')">cos</button>
+          <button onclick="appendTrig('tan')">tan</button>
+          <button onclick="appendTrig('hyp')">hyp</button>
+        </div>
+        <div class="sci-row">
+          <button onclick="appendTrig('sec')">sec</button>
+          <button onclick="appendTrig('csc')">csc</button>
+          <button onclick="appendTrig('cot')">cot</button>
+          <button onclick="clearEntry()">C</button>
+          <button onclick="backspace()">⌫</button>
+        </div>
+      </div>
+
+      <div id="panel-func" class="sci-panel">
+        <div class="sci-row">
+          <button onclick="sciFunc('abs')">|x|</button>
+          <button onclick="sciFunc('floor')">⌊x⌋</button>
+          <button onclick="sciFunc('ceil')">⌈x⌉</button>
+          <button onclick="clearEntry()">C</button>
+          <button onclick="backspace()">⌫</button>
+        </div>
+        <div class="sci-row">
+          <button onclick="sciFunc('rand')">rand</button>
+          <button onclick="sciFunc('dms')">→dms</button>
+          <button onclick="sciFunc('deg')">→deg</button>
+          <button onclick="append('e+')">exp</button>
+          <button onclick="append('%')">mod</button>
+        </div>
+      </div>
+
+      <div class="sci-controls">
+        <select><option>DEG</option><option>RAD</option><option>GRAD</option></select>
+        <button onclick="toggleFE()" class="fe-small">F-E</button>
+        <button class="dropdown-btn" onclick="showPanel('trig')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M3 20h18M12 4v16M12 4l8 16"/></svg> Trigonometry
+        </button>
+        <button class="dropdown-btn" onclick="showPanel('func')">
+          <i style="font-family:serif; margin-right:4px;">∫</i> Function
+        </button>
+      </div>
+
+      <div class="memory-row">
+        <button onclick="memoryClear()">MC</button>
+        <button onclick="memoryRecall()">MR</button>
+        <button onclick="memoryAdd()">M+</button>
+        <button onclick="memorySubtract()">M-</button>
+        <button onclick="memoryStore()">MS</button>
+        <div class="mem-dropdown" onclick="toggleMemMenu()">
+            <button>Mv</button>
+            <div id="memMenuSci" class="mem-menu-content">
+                <div onclick="memoryClear()">MC</div>
+                <div onclick="memoryAdd()">M+</div>
+                <div onclick="memorySubtract()">M-</div>
+                <div onclick="memoryStore()">MS</div>
+            </div>
+        </div>
+      </div>
+
+      <div class="sci-grid">
+        <button onclick="squareRoot()">²√x</button>
+        <button onclick="append('(')">(</button>
+        <button onclick="append(')')">)</button>
+        <button onclick="sciFunc('fact')">n!</button>
+        <button onclick="append('/')">÷</button>
+        <button onclick="append('**')">x^y</button>
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('*')">×</button>
+        <button onclick="sciFunc('pow10')">10ˣ</button>
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('-')">−</button>
+        <button onclick="sciFunc('log')">log</button>
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="append('+')">+</button>
+        <button onclick="sciFunc('ln')">ln</button>
+        <button onclick="toggleSign()">+/-</button>
+        <button onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="calculate()" class="equals">=</button>
+      </div>
     </div>
 
-    <!-- Graphing Mode (Active) -->
+    <!-- Graphing Mode -->
     <div id="mode-graphing" class="mode-content active" style="padding: 0; position: relative;">
-      
-      <!-- Function Input Area -->
       <div class="graph-input-container">
         <span style="color:#4af626; font-family:serif; font-style:italic;">f(x) =</span>
         <input type="text" id="graph-input" value="sin(x)" oninput="drawGraph()" placeholder="e.g. x^2, sin(x)">
       </div>
-
-      <!-- The Graph Canvas -->
       <canvas id="graphCanvas"></canvas>
-
-      <!-- Floating Zoom Controls -->
       <div class="graph-controls">
         <button onclick="zoomGraph(1.5)">+</button>
         <button onclick="zoomGraph(0.5)">-</button>
@@ -78,9 +233,24 @@
       </div>
     </div>
 
-    <!-- AI Chat (Hidden for graph to give full space, but can be toggled) -->
-    <div class="ai-container" style="display:none;">
-      <!-- ... AI Chat ... -->
+    <!-- Placeholders -->
+    <div id="mode-programmer" class="mode-content"><p>Programmer features coming next...</p></div>
+    <div id="mode-date" class="mode-content"><p>Date calculation coming next...</p></div>
+    <div id="mode-currency" class="mode-content"><p>Currency converter coming next...</p></div>
+    <div id="mode-volume" class="mode-content"><p>Volume converter coming next...</p></div>
+    <div id="mode-length" class="mode-content"><p>Length converter coming next...</p></div>
+    <div id="mode-settings" class="mode-content"><p>Settings coming next...</p></div>
+
+    <!-- AI Chat -->
+    <div class="ai-container" id="aiChatContainer">
+      <div class="ai-row">
+        <input id="aiQuestion" placeholder="Ask AI e.g. 15% of 240">
+        <button onclick="askAI()">Ask AI</button>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <p id="aiAnswer"></p>
+        <button onclick="clearAI()" style="background: #ff3b30; padding: 8px 12px; font-size: 14px; margin-left: 10px; box-shadow: 0 2px 0 #b3241d; display: none;" id="clearBtn">Clear</button>
+      </div>
     </div>
   </div>
   <script src="script.js"></script>

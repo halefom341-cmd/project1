@@ -10,6 +10,14 @@ function toggleHistory() { document.getElementById("historyPanel").classList.tog
 function keepOnTop() { document.getElementById("mainApp").classList.toggle("kept-on-top"); }
 
 function switchMode(modeName, btnElement) {
+  // Hide main calculator display when in Graphing mode
+  const displayEl = document.getElementById("display");
+  if (modeName === 'graphing') {
+    displayEl.style.display = "none";
+    setTimeout(resizeCanvas, 50);
+  } else {
+    displayEl.style.display = "block";
+  }
   const titles = { standard: "Standard", scientific: "Scientific", graphing: "Graphing", programmer: "Programmer", date: "Date calculation", currency: "Currency", volume: "Volume", length: "Length", settings: "Settings" };
   document.getElementById("mode-title").innerText = titles[modeName];
   document.querySelectorAll(".mode-content").forEach(el => el.classList.remove("active"));
