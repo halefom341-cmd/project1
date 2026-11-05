@@ -10,44 +10,56 @@
   <!-- Sidebar Menu -->
   <div id="sidebar" class="sidebar">
     <button class="close-btn" onclick="toggleMenu()">✕</button>
-    
     <h2>Calculator</h2>
     <button class="menu-item active" onclick="switchMode('standard', this)">📏 Standard</button>
     <button class="menu-item" onclick="switchMode('scientific', this)">🔬 Scientific</button>
     <button class="menu-item" onclick="switchMode('graphing', this)">📈 Graphing</button>
     <button class="menu-item" onclick="switchMode('programmer', this)">💻 Programmer</button>
     <button class="menu-item" onclick="switchMode('date', this)">📅 Date calculation</button>
-    
     <hr>
     <h2>Converter</h2>
     <button class="menu-item" onclick="switchMode('currency', this)">💵 Currency</button>
     <button class="menu-item" onclick="switchMode('volume', this)">📦 Volume</button>
     <button class="menu-item" onclick="switchMode('length', this)">📏 Length</button>
-
-    <hr style="margin-top: auto;"> <!-- Pushes Settings to the bottom -->
+    <hr style="margin-top: auto;">
     <button class="menu-item" onclick="switchMode('settings', this)">⚙️ Settings</button>
   </div>
 
   <!-- Main App -->
   <div class="app-container">
-    
-    <!-- Header -->
     <div class="header">
       <button class="hamburger" onclick="toggleMenu()">☰</button>
       <h1 id="mode-title">Standard</h1>
     </div>
 
-    <!-- Calculator Display -->
+    <!-- Display -->
     <div class="display-container">
       <input id="display" readonly placeholder="0">
     </div>
 
-    <!-- Modes (Only Standard is visible by default) -->
+    <!-- Standard Mode -->
     <div id="mode-standard" class="mode-content active">
+      
+      <!-- Memory Row -->
+      <div class="memory-row">
+        <button onclick="memoryClear()">MC</button>
+        <button onclick="memoryRecall()">MR</button>
+        <button onclick="memoryAdd()">M+</button>
+        <button onclick="memorySubtract()">M-</button>
+        <button onclick="memoryStore()">MS</button>
+        <button>Mv</button>
+      </div>
+
+      <!-- Standard Grid -->
       <div class="buttons standard-grid">
+        <button onclick="append('%')">%</button>
+        <button onclick="clearEntry()">CE</button>
         <button onclick="clearDisplay()">C</button>
         <button onclick="backspace()">⌫</button>
-        <button onclick="append('%')">%</button>
+        
+        <button onclick="reciprocal()">1/x</button>
+        <button onclick="square()">x²</button>
+        <button onclick="squareRoot()">²√x</button>
         <button onclick="append('/')">÷</button>
         
         <button onclick="append('7')">7</button>
@@ -65,7 +77,8 @@
         <button onclick="append('3')">3</button>
         <button onclick="append('+')">+</button>
         
-        <button onclick="append('0')" style="grid-column: span 2;">0</button>
+        <button onclick="toggleSign()">+/-</button>
+        <button onclick="append('0')">0</button>
         <button onclick="append('.')">.</button>
         <button onclick="calculate()" class="equals">=</button>
       </div>
@@ -81,7 +94,7 @@
     <div id="mode-length" class="mode-content"><p>Length converter coming next...</p></div>
     <div id="mode-settings" class="mode-content"><p>Settings coming next...</p></div>
 
-    <!-- AI Chat (Preserved) -->
+    <!-- AI Chat -->
     <div class="ai-container">
       <div class="ai-row">
         <input id="aiQuestion" placeholder="Ask AI e.g. 15% of 240">
