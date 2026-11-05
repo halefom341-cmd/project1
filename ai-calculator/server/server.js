@@ -8,7 +8,6 @@ app.use(cors());
 app.use(express.json());
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// Switched to the high-throughput Lite model to avoid 503 congestion
 const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" }); 
 
 app.post("/ask", async (req, res) => {
@@ -27,3 +26,7 @@ app.post("/ask", async (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+
+// Export for Vercel with a 60-second timeout
+module.exports = app;
+module.exports.config = { maxDuration: 60 };
