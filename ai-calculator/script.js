@@ -256,10 +256,29 @@ switchMode = function(modeName, btnElement) {
 // Initial call
 setTimeout(() => { if(typeof updateProgrammer === "function") updateProgrammer(); }, 500);
 
-// --- Programmer Mode Logic (V2) ---
+// Ensure initialization
+setTimeout(() => { if(typeof updateProgrammer === "function") updateProgrammer(); }, 500);
+
+// Ensure setProgBase is defined globally and updates correctly
+window.setProgBase = function(base) {
+  currentProgBase = base;
+  
+  // Remove active class from all rows
+  document.querySelectorAll('.base-row').forEach(el => el.classList.remove('active-base'));
+  
+  // Add active class to selected row
+  if (base === 16) document.getElementById('row-hex').classList.add('active-base');
+  if (base === 10) document.getElementById('row-dec').classList.add('active-base');
+  if (base === 8) document.getElementById('row-oct').classList.add('active-base');
+  if (base === 2) document.getElementById('row-bin').classList.add('active-base');
+  
+  updateProgrammer();
+};
+
+// --- Programmer Mode Logic (V3) ---
 let progValue = 0n;
-let currentProgBase = 10; // Default DEC
-let progExpression = ""; // e.g., "5 AND 3"
+let currentProgBase = 10; 
+let progExpression = ""; 
 
 function setProgBase(base) {
   currentProgBase = base;
@@ -278,11 +297,27 @@ function updateProgrammer() {
   let mask = (1n << BigInt(wordSize)) - 1n;
   let maskedVal = progValue & mask;
 
-  // Display in all bases
+  // Update Display
   document.getElementById("base-hex").innerText = maskedVal.toString(16).toUpperCase();
   document.getElementById("base-dec").innerText = maskedVal.toString(10);
   document.getElementById("base-oct").innerText = maskedVal.toString(8);
   document.getElementById("base-bin").innerText = maskedVal.toString(2);
+
+  // Also update the main top display since it's used in Programmer mode
+  document.getElementById("display").value = maskedVal.toString(currentProgBase).toUpperCase();
+
+  // Enable/Disable keys based on Base
+  for (let i = 0; i <= 15; i++) {
+    let hexChar = i.toString(16).toUpperCase();
+    let btn = document.getElementById("btn-" + hexChar);
+    if (btn) {
+      if (i >= currentProgBase) {
+        btn.disabled = true;
+      } else {
+        btn.disabled = false;
+      }
+    }
+  }
 
   renderBitGrid(wordSize);
 }
@@ -333,23 +368,9 @@ function toggleBitGrid() {
   updateProgrammer();
 }
 
-function toggleProgPanel(panel) {
-  const p1 = document.getElementById("panel-bitwise");
-  const p2 = document.getElementById("panel-shift");
-  if (panel === 'bitwise') {
-    p1.classList.toggle("active");
-    p2.classList.remove("active");
-  } else {
-    p2.classList.toggle("active");
-    p1.classList.remove("active");
-  }
-}
-
-// Handle Number Input based on Active Base
 function progAppend(val) {
-  // Check if the digit is valid for the current base
   let numVal = parseInt(val, 16);
-  if (isNaN(numVal) || numVal >= currentProgBase) return; // Reject invalid digits (e.g., 5 in BIN)
+  if (isNaN(numVal) || numVal >= currentProgBase) return; 
 
   let currentStr = progValue.toString(currentProgBase).toUpperCase();
   if (currentStr === "0") currentStr = "";
@@ -358,105 +379,48 @@ function progAppend(val) {
   updateProgrammer();
 }
 
-// Bitwise and Shift Operators
-function bitwiseOp(op) {
-  progExpression += ` ${progValue.toString(10)} ${op} `;
-  progValue = 0n; // Reset for next input
-  updateProgrammer();
-}
-
-function shiftOp(op) {
-  progExpression += ` ${progValue.toString(10)} ${op} `;
-  progValue = 0n;
-  updateProgrammer();
-}
-
-// Override calculate for Programmer
-const oldCalculate2 = calculate;
-calculate = function() {
-  if (document.getElementById("mode-programmer").classList.contains("active")) {
-    // If there's a pending expression, evaluate it
-    if (progExpression !== "") {
-      let fullExpr = progExpression + progValue.toString(10);
-      progExpression = ""; // Clear
-      
-      try {
-        // Replace Bitwise words with JS BigInt operators
-        let evalStr = fullExpr.replace(/ AND /g, " & ")
-                               .replace(/ OR /g, " | ")
-                               .replace(/ XOR /g, " ^ ")
-                               .replace(/ NAND /g, " & ")
-                               .replace(/ NOR /g, " | ")
-                               .replace(/<</g, " << ")
-                               .replace(/>>/g, " >> ");
-                               
-        // Note: NAND/NOR require special handling because JS doesn't have native NAND
-        if (fullExpr.includes("NAND")) {
-            let parts = fullExpr.split("NAND");
-            progValue = ~(BigInt(parts[0]) & BigInt(parts[1]));
-        } else if (fullExpr.includes("NOR")) {
-            let parts = fullExpr.split("NOR");
-            progValue = ~(BigInt(parts[0]) | BigInt(parts[1]));
-        } else if (fullExpr.includes("<<")) {
-            let parts = fullExpr.split("<<");
-            progValue = BigInt(parts[0].trim()) << BigInt(parts[1].trim());
-        } else if (fullExpr.includes(">>")) {
-            let parts = fullExpr.split(">>");
-            progValue = BigInt(parts[0].trim()) >> BigInt(parts[1].trim());
-        } else {
-            // Standard AND, OR, XOR
-            progValue = eval(evalStr);
-        }
-      } catch (e) {
-        alert("Invalid Bitwise Expression");
-        progValue = 0n;
-      }
-    }
-    updateProgrammer();
-    return;
-  }
-  oldCalculate2();
-};
-
-// Hook into append to route programmer numbers correctly
-const oldAppend3 = append;
+// Override standard append
+const oldAppendProg = append;
 append = function(val) {
   if (document.getElementById("mode-programmer").classList.contains("active")) {
     if (/^[0-9A-F]$/i.test(val)) {
       progAppend(val);
+    } else {
+        progExpression += ` ${progValue.toString(10)} ${val} `;
+        progValue = 0n;
+        updateProgrammer();
     }
     return;
   }
-  oldAppend3(val);
+  oldAppendProg(val);
 };
 
-// Clear button override
-const oldClearDisplay = clearDisplay;
-clearDisplay = function() {
+// Handle keyboard input for Programmer mode
+const oldKeyDown = document.onkeydown; // Just to be safe if previous exists
+window.addEventListener('keydown', (e) => {
   if (document.getElementById("mode-programmer").classList.contains("active")) {
-    progValue = 0n;
-    progExpression = "";
-    updateProgrammer();
-    return;
+    if (document.activeElement.tagName === "INPUT") return; // Ignore if typing in AI box
+    
+    let key = e.key.toUpperCase();
+    if (/^[0-9A-F]$/.test(key)) {
+      progAppend(key);
+      e.preventDefault();
+    } else if (key === "=" || key === "ENTER") {
+      calculate();
+      e.preventDefault();
+    } else if (key === "BACKSPACE") {
+      let str = progValue.toString(currentProgBase);
+      if (str.length > 1) {
+        str = str.slice(0, -1);
+        progValue = BigInt(parseInt(str, currentProgBase));
+      } else {
+        progValue = 0n;
+      }
+      updateProgrammer();
+      e.preventDefault();
+    }
   }
-  oldClearDisplay();
-}
+});
 
-// Ensure initialization
+// Initial call
 setTimeout(() => { if(typeof updateProgrammer === "function") updateProgrammer(); }, 500);
-
-// Ensure setProgBase is defined globally and updates correctly
-window.setProgBase = function(base) {
-  currentProgBase = base;
-  
-  // Remove active class from all rows
-  document.querySelectorAll('.base-row').forEach(el => el.classList.remove('active-base'));
-  
-  // Add active class to selected row
-  if (base === 16) document.getElementById('row-hex').classList.add('active-base');
-  if (base === 10) document.getElementById('row-dec').classList.add('active-base');
-  if (base === 8) document.getElementById('row-oct').classList.add('active-base');
-  if (base === 2) document.getElementById('row-bin').classList.add('active-base');
-  
-  updateProgrammer();
-};

@@ -179,3 +179,27 @@ button:nth-child(4n), button:nth-child(2), button:nth-child(3) { background: #3d
   color: #007aff;
   font-weight: bold;
 }
+
+/* Programmer Mode Fixes */
+#mode-programmer { 
+  display: none; 
+  flex: 1; 
+  flex-direction: column; 
+  overflow: hidden; /* Kills the scrollbar */
+  padding: 0 15px 10px 15px; 
+  justify-content: space-between;
+}
+#mode-programmer.active { display: flex; }
+
+.prog-bases { margin-bottom: 5px; flex-shrink: 0; }
+.base-row { padding: 4px 10px; }
+.bit-grid { margin-bottom: 5px; }
+
+.prog-controls { margin-bottom: 5px; flex-shrink: 0; }
+.prog-dropdowns { margin-bottom: 5px; flex-shrink: 0; }
+
+#mode-programmer .standard-grid { flex: 1; }
+#mode-programmer button { font-size: 16px; padding: 8px 0; }
+
+/* Disabled button style */
+button:disabled { opacity: 0.3; pointer-events: none; }
