@@ -1,4 +1,4 @@
-﻿const display = document.getElementById("display");
+const display = document.getElementById("display");
 
 function append(value) {
   display.value += value;
@@ -44,7 +44,7 @@ async function askAI() {
 
   answerEl.textContent = "Thinking...";
   try {
-    const res = await fetch("http://localhost:3000/ask", {
+    const res = await fetch("https://project1-bice-alpha.vercel.app/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question })
