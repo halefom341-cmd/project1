@@ -1,4 +1,4 @@
-﻿const display = document.getElementById("display");
+const display = document.getElementById("display");
 
 // --- Navigation Logic ---
 function toggleMenu() {
@@ -8,8 +8,8 @@ function toggleMenu() {
 function switchMode(modeName, btnElement) {
   // 1. Change Title
   const titles = {
-    standard: "Standard", scientific: "Scientific", programmer: "Programmer",
-    date: "Date calculation", currency: "Currency", volume: "Volume", length: "Length"
+    standard: "Standard", scientific: "Scientific", graphing: "Graphing", programmer: "Programmer",
+    date: "Date calculation", currency: "Currency", volume: "Volume", length: "Length", settings: "Settings"
   };
   document.getElementById("mode-title").innerText = titles[modeName];
 
