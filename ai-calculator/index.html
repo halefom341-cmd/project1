@@ -280,13 +280,27 @@
       
       <!-- Base Displays -->
       <div class="prog-bases">
-        <div class="base-row"><span class="base-label">HEX</span> <span id="base-hex" class="base-val">0</span></div>
-        <div class="base-row"><span class="base-label" style="color:#007aff; border-left:3px solid #007aff; padding-left:5px;">DEC</span> <span id="base-dec" class="base-val">0</span></div>
-        <div class="base-row"><span class="base-label">OCT</span> <span id="base-oct" class="base-val">0</span></div>
-        <div class="base-row"><span class="base-label">BIN</span> <span id="base-bin" class="base-val">0</span></div>
+        <div class="base-row" onclick="setProgBase(16)" id="row-hex">
+          <span class="base-label">HEX</span> 
+          <span id="base-hex" class="base-val">0</span>
+        </div>
+        <div class="base-row active-base" onclick="setProgBase(10)" id="row-dec">
+          <span class="base-label">DEC</span> 
+          <span id="base-dec" class="base-val">0</span>
+        </div>
+        <div class="base-row" onclick="setProgBase(8)" id="row-oct">
+          <span class="base-label">OCT</span> 
+          <span id="base-oct" class="base-val">0</span>
+        </div>
+        <div class="base-row" onclick="setProgBase(2)" id="row-bin">
+          <span class="base-label">BIN</span> 
+          <span id="base-bin" class="base-val">0</span>
+        </div>
       </div>
-
-      <!-- Display / Bit Grid Toggle -->
+      
+      <!-- Hidden input to track the expression -->
+      <input type="text" id="prog-expression" style="display:none;">
+<!-- Display / Bit Grid Toggle -->
       <div class="prog-controls">
         <button onclick="toggleBitGrid()" class="icon-btn" style="color:#007aff;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
@@ -390,4 +404,5 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 

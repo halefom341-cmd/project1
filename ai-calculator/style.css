@@ -121,3 +121,11 @@ button:nth-child(4n), button:nth-child(2), button:nth-child(3) { background: #3d
 /* Make sure mode-content handles hiding properly */
 #mode-programmer { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding-bottom: 10px; }
 #mode-programmer.active { display: flex; }
+
+/* Active Base Row Styling */
+.base-row { cursor: pointer; transition: background 0.2s; padding: 4px 10px; margin: 0 -10px; border-radius: 4px; }
+.base-row:hover { background: #3d3d4a; }
+.base-row.active-base .base-label { color: #007aff; font-weight: bold; }
+.base-row.active-base { border-left: 4px solid #007aff; background: #2b2b36; }
+.base-val { color: #fff; }
+.base-row.active-base .base-val { color: #007aff; font-weight: bold; }
