@@ -1,4 +1,4 @@
-﻿const display = document.getElementById("display");
+const display = document.getElementById("display");
 let memory = 0;
 let history = [];
 let isSecondFunc = false;
@@ -16,6 +16,11 @@ function switchMode(modeName, btnElement) {
   document.getElementById(`mode-${modeName}`).classList.add("active");
   document.querySelectorAll(".menu-item").forEach(el => el.classList.remove("active"));
   if(btnElement) btnElement.classList.add("active");
+  
+  // Trigger canvas resize if switching to graph
+  if (modeName === 'graphing') {
+    setTimeout(resizeCanvas, 50);
+  }
   toggleMenu();
 }
 
@@ -49,7 +54,7 @@ function toggleSign() {
 function calculate() {
   const expr = display.value.trim();
   if (!expr) return;
-  let safeExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+  let safeExpr = expr.replace(/�/g, '*').replace(/�/g, '/').replace(/-/g, '-');
   if (!/^[0-9+\-*/%.() ]+$/.test(safeExpr)) { display.value = "Invalid input"; return; }
   let result;
   try { result = eval(safeExpr); } catch { display.value = "Invalid input"; return; }
