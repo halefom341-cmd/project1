@@ -19,22 +19,30 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; 
 #historyList li { font-size: 14px; padding: 8px 0; border-bottom: 1px solid #ddd; text-align: right; }
 
 /* App Container */
-.app-container { background: #f3f3f3; border-radius: 8px; padding: 10px; width: 100%; max-width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 95vh; max-height: 650px; transition: top 0.3s; position: relative; }
+.app-container { background: #f3f3f3; border-radius: 8px; width: 100%; max-width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 95vh; max-height: 650px; transition: top 0.3s; position: relative; overflow: hidden; border: 1px solid #ccc; }
 .app-container.kept-on-top { position: fixed; top: 10px; z-index: 50; }
 
-/* Header */
-.header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
+/* Windows Title Bar */
+.title-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 5px 0 10px; background: #f3f3f3; height: 32px; border-bottom: 1px solid #e0e0e0; user-select: none; }
+.title-text { font-size: 12px; color: #333; display: flex; align-items: center; gap: 5px; }
+.window-controls { display: flex; }
+.window-controls button { background: none; border: none; width: 40px; height: 32px; font-family: 'Segoe MDL2 Assets', 'Segoe UI Symbol', sans-serif; font-size: 10px; color: #333; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; border-radius: 0; box-shadow: none; }
+.window-controls button:hover { background: #e0e0e0; }
+.window-controls button.close-app:hover { background: #e81123; color: white; }
+
+/* App Header */
+.header { display: flex; align-items: center; padding: 10px 15px 0 15px; justify-content: space-between; }
 .hamburger { background: none; border: none; font-size: 22px; padding: 0 15px 0 0; color: #333; cursor: pointer; box-shadow: none; }
 #mode-title { margin: 0; font-size: 20px; font-weight: 600; color: #333; flex-grow: 1; }
 .header-icons { display: flex; gap: 5px; }
-.icon-btn { background: none; border: none; font-size: 18px; color: #666; cursor: pointer; padding: 5px; border-radius: 4px; box-shadow: none; }
-.icon-btn:hover { background: #e0e0e0; color: #333; }
+.icon-btn { background: none; border: none; cursor: pointer; padding: 5px; border-radius: 4px; box-shadow: none; color: #333; display: flex; align-items: center; justify-content: center; }
+.icon-btn:hover { background: #e0e0e0; }
 
 /* Display */
-#display { width: 100%; padding: 20px 10px; font-size: 46px; text-align: right; border: none; background: transparent; color: #333; font-family: 'Segoe UI', sans-serif; font-weight: 600; margin-bottom: 10px; outline: none; }
+#display { width: 100%; padding: 10px 15px; font-size: 46px; text-align: right; border: none; background: transparent; color: #333; font-family: 'Segoe UI', sans-serif; font-weight: 600; margin-bottom: 5px; outline: none; }
 
 /* Grids and Buttons */
-.mode-content { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+.mode-content { display: none; flex: 1; flex-direction: column; padding: 0 10px 10px 10px; overflow-y: auto; }
 .mode-content.active { display: flex; }
 .memory-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 8px; }
 .memory-row button { background: transparent; border: none; color: #666; font-size: 13px; padding: 5px 0; box-shadow: none; font-weight: 500; cursor: pointer; }
@@ -48,7 +56,7 @@ button:active { background: #dcdcdc; }
 .equals:hover { background: #004578 !important; }
 
 /* AI Chat Container */
-.ai-container { margin-top: 10px; border-top: 1px solid #d1d1d1; padding-top: 10px; }
+.ai-container { margin: 0 10px 10px 10px; border-top: 1px solid #d1d1d1; padding-top: 10px; }
 .ai-row { display: flex; gap: 8px; }
 #aiQuestion { flex: 1; padding: 10px; font-size: 14px; border: 1px solid #d1d1d1; border-radius: 4px; background: #fff; color: #333; outline: none; }
 .ai-row button { background: #005a9e; color: white; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px; }
