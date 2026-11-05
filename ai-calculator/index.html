@@ -25,11 +25,24 @@
     <button class="menu-item" onclick="switchMode('settings', this)">⚙️ Settings</button>
   </div>
 
+  <!-- History Panel -->
+  <div id="historyPanel" class="history-panel">
+    <div class="history-header">
+      <h2>History</h2>
+      <button class="close-btn" onclick="toggleHistory()">✕</button>
+    </div>
+    <ul id="historyList"></ul>
+  </div>
+
   <!-- Main App -->
-  <div class="app-container">
+  <div class="app-container" id="mainApp">
     <div class="header">
       <button class="hamburger" onclick="toggleMenu()">☰</button>
       <h1 id="mode-title">Standard</h1>
+      <div class="header-icons">
+        <button class="icon-btn" title="Keep on top" onclick="keepOnTop()">📌</button>
+        <button class="icon-btn" title="History" onclick="toggleHistory()">🕒</button>
+      </div>
     </div>
 
     <!-- Display -->
@@ -39,8 +52,6 @@
 
     <!-- Standard Mode -->
     <div id="mode-standard" class="mode-content active">
-      
-      <!-- Memory Row -->
       <div class="memory-row">
         <button onclick="memoryClear()">MC</button>
         <button onclick="memoryRecall()">MR</button>
@@ -50,7 +61,6 @@
         <button>Mv</button>
       </div>
 
-      <!-- Standard Grid -->
       <div class="buttons standard-grid">
         <button onclick="append('%')">%</button>
         <button onclick="clearEntry()">CE</button>
@@ -105,7 +115,6 @@
         <button onclick="clearAI()" style="background: #ff3b30; padding: 8px 12px; font-size: 14px; margin-left: 10px; margin-top: 10px; box-shadow: 0 4px 0 #b3241d; display: none;" id="clearBtn">Clear</button>
       </div>
     </div>
-
   </div>
   <script src="script.js"></script>
 </body>

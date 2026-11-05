@@ -1,8 +1,12 @@
 ﻿const display = document.getElementById("display");
 let memory = 0;
+let history = [];
 
 // --- Navigation ---
 function toggleMenu() { document.getElementById("sidebar").classList.toggle("open"); }
+function toggleHistory() { document.getElementById("historyPanel").classList.toggle("open"); }
+function keepOnTop() { document.getElementById("mainApp").classList.toggle("kept-on-top"); }
+
 function switchMode(modeName, btnElement) {
   const titles = { standard: "Standard", scientific: "Scientific", graphing: "Graphing", programmer: "Programmer", date: "Date calculation", currency: "Currency", volume: "Volume", length: "Length", settings: "Settings" };
   document.getElementById("mode-title").innerText = titles[modeName];
@@ -22,51 +26,45 @@ function clearDisplay() { display.value = ""; }
 function backspace() { display.value = display.value.slice(0, -1); }
 
 function clearEntry() {
-  // Clears the current number being typed, but not the whole equation
   let val = display.value;
   let lastOp = Math.max(val.lastIndexOf('+'), val.lastIndexOf('-'), val.lastIndexOf('*'), val.lastIndexOf('/'));
-  if (lastOp === -1) { display.value = ""; } 
-  else { display.value = val.substring(0, lastOp + 1); }
+  if (lastOp === -1) { display.value = ""; } else { display.value = val.substring(0, lastOp + 1); }
 }
 
 function toggleSign() {
   if (!display.value || display.value === "0") return;
-  if (display.value.startsWith("-")) { display.value = display.value.substring(1); } 
-  else { display.value = "-" + display.value; }
+  if (display.value.startsWith("-")) { display.value = display.value.substring(1); } else { display.value = "-" + display.value; }
 }
 
-function square() {
-  try { display.value = Math.pow(eval(display.value), 2); } catch { display.value = "Invalid input"; }
-}
-
-function squareRoot() {
-  try {
-    let val = eval(display.value);
-    if (val < 0) { display.value = "Invalid input"; } 
-    else { display.value = Math.sqrt(val); }
-  } catch { display.value = "Invalid input"; }
-}
-
-function reciprocal() {
-  try {
-    let val = eval(display.value);
-    if (val === 0) { display.value = "Cannot divide by zero"; } 
-    else { display.value = 1 / val; }
-  } catch { display.value = "Invalid input"; }
-}
+function square() { try { display.value = Math.pow(eval(display.value), 2); } catch { display.value = "Invalid input"; } }
+function squareRoot() { try { let val = eval(display.value); if (val < 0) { display.value = "Invalid input"; } else { display.value = Math.sqrt(val); } } catch { display.value = "Invalid input"; } }
+function reciprocal() { try { let val = eval(display.value); if (val === 0) { display.value = "Cannot divide by zero"; } else { display.value = 1 / val; } } catch { display.value = "Invalid input"; } }
 
 function calculate() {
   const expr = display.value.trim();
   if (!expr) return;
-  // Replace visual symbols with JS operators
   let safeExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
   if (!/^[0-9+\-*/%.() ]+$/.test(safeExpr)) { display.value = "Invalid input"; return; }
   
   let result;
   try { result = eval(safeExpr); } catch { display.value = "Invalid input"; return; }
-  
   if (!Number.isFinite(result)) { display.value = "Cannot divide by zero"; return; }
+  
+  // Add to history
+  history.push(`${expr} = ${parseFloat(result.toFixed(10))}`);
+  renderHistory();
+
   display.value = parseFloat(result.toFixed(10)).toString();
+}
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  list.innerHTML = "";
+  history.forEach(item => {
+    let li = document.createElement("li");
+    li.textContent = item;
+    list.appendChild(li);
+  });
 }
 
 // --- Memory Logic ---
