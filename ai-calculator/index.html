@@ -280,25 +280,26 @@
       
       <!-- Base Displays -->
       <div class="prog-bases">
-        <div class="base-row" onclick="setProgBase(16)" id="row-hex">
+        <button class="base-row" onclick="setProgBase(16)" id="row-hex">
           <span class="base-label">HEX</span> 
           <span id="base-hex" class="base-val">0</span>
-        </div>
-        <div class="base-row active-base" onclick="setProgBase(10)" id="row-dec">
+        </button>
+        <button class="base-row active-base" onclick="setProgBase(10)" id="row-dec">
           <span class="base-label">DEC</span> 
           <span id="base-dec" class="base-val">0</span>
-        </div>
-        <div class="base-row" onclick="setProgBase(8)" id="row-oct">
+        </button>
+        <button class="base-row" onclick="setProgBase(8)" id="row-oct">
           <span class="base-label">OCT</span> 
           <span id="base-oct" class="base-val">0</span>
-        </div>
-        <div class="base-row" onclick="setProgBase(2)" id="row-bin">
+        </button>
+        <button class="base-row" onclick="setProgBase(2)" id="row-bin">
           <span class="base-label">BIN</span> 
           <span id="base-bin" class="base-val">0</span>
-        </div>
+        </button>
       </div>
       
       <!-- Hidden input to track the expression -->
+      <input type="text" id="prog-expression" style="display:none;">
       <input type="text" id="prog-expression" style="display:none;">
 <!-- Display / Bit Grid Toggle -->
       <div class="prog-controls">
@@ -404,5 +405,6 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
 

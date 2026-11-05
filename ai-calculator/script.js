@@ -444,3 +444,19 @@ clearDisplay = function() {
 
 // Ensure initialization
 setTimeout(() => { if(typeof updateProgrammer === "function") updateProgrammer(); }, 500);
+
+// Ensure setProgBase is defined globally and updates correctly
+window.setProgBase = function(base) {
+  currentProgBase = base;
+  
+  // Remove active class from all rows
+  document.querySelectorAll('.base-row').forEach(el => el.classList.remove('active-base'));
+  
+  // Add active class to selected row
+  if (base === 16) document.getElementById('row-hex').classList.add('active-base');
+  if (base === 10) document.getElementById('row-dec').classList.add('active-base');
+  if (base === 8) document.getElementById('row-oct').classList.add('active-base');
+  if (base === 2) document.getElementById('row-bin').classList.add('active-base');
+  
+  updateProgrammer();
+};

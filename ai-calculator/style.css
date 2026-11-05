@@ -122,10 +122,60 @@ button:nth-child(4n), button:nth-child(2), button:nth-child(3) { background: #3d
 #mode-programmer { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding-bottom: 10px; }
 #mode-programmer.active { display: flex; }
 
-/* Active Base Row Styling */
-.base-row { cursor: pointer; transition: background 0.2s; padding: 4px 10px; margin: 0 -10px; border-radius: 4px; }
-.base-row:hover { background: #3d3d4a; }
-.base-row.active-base .base-label { color: #007aff; font-weight: bold; }
-.base-row.active-base { border-left: 4px solid #007aff; background: #2b2b36; }
-.base-val { color: #fff; }
-.base-row.active-base .base-val { color: #007aff; font-weight: bold; }
+
+
+/* --- Programmer Base Rows (Fixing Clickability) --- */
+.prog-bases {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+  padding: 0 15px;
+  width: 100%;
+}
+
+.base-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #3d3d4a;
+  padding: 8px 10px;
+  margin: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: none !important; /* Override global button shadow */
+  transition: background 0.2s;
+}
+
+.base-row:hover {
+  background: #3d3d4a;
+}
+
+.base-label {
+  font-weight: 600;
+  color: #888;
+  font-size: 14px;
+}
+
+.base-val {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+/* Active State */
+.base-row.active-base {
+  border-left: 4px solid #007aff;
+  background: #2b2b36;
+}
+.base-row.active-base .base-label {
+  color: #007aff;
+}
+.base-row.active-base .base-val {
+  color: #007aff;
+  font-weight: bold;
+}
