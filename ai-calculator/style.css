@@ -1,121 +1,19 @@
-﻿body { 
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  min-height: 100vh; 
-  margin: 0; 
-  background: #1e1e24; /* Dark background */
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-.calculator { 
-  background: #2b2b36; /* Calculator body color */
-  padding: 20px; 
-  border-radius: 20px; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-  width: 100%; 
-  max-width: 400px; 
-  border: 1px solid #3d3d4a;
-}
-
-#display { 
-  width: 100%; 
-  padding: 20px 15px; 
-  font-size: 32px; 
-  text-align: right; 
-  box-sizing: border-box; 
-  margin-bottom: 20px; 
-  border: none;
-  border-radius: 10px;
-  background: #1a1a21; /* Dark screen */
-  color: #4af626; /* Classic calculator green text */
-  font-family: 'Courier New', Courier, monospace; /* Monospace for numbers */
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-}
-
-.buttons { 
-  display: grid; 
-  grid-template-columns: repeat(4, 1fr); 
-  gap: 12px; 
-}
-
-button { 
-  padding: 20px; 
-  font-size: 22px; 
-  font-weight: bold;
-  cursor: pointer; 
-  border: none; 
-  background: #3d3d4a; /* Dark gray buttons */
-  color: #ffffff;
-  border-radius: 12px; 
-  box-shadow: 0 4px 0 #23232b; /* 3D push effect */
-  transition: all 0.1s ease;
-  user-select: none;
-}
-
-button:active {
-  transform: translateY(4px); /* Button pushes down */
-  box-shadow: 0 0 0 #23232b;
-}
-
+﻿body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #1e1e24; padding: 10px; box-sizing: border-box; }
+.calculator { background: #2b2b36; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; border: 1px solid #3d3d4a; }
+#display { width: 100%; padding: 20px 15px; font-size: 28px; text-align: right; box-sizing: border-box; margin-bottom: 15px; border: none; border-radius: 10px; background: #1a1a21; color: #4af626; font-family: 'Courier New', Courier, monospace; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
+.scientific-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.scientific-buttons button { background: #2c3e50; box-shadow: 0 4px 0 #1a252f; font-size: 16px; padding: 12px; }
+.scientific-buttons button:hover { background: #34495e; }
+.buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+button { padding: 18px; font-size: 20px; font-weight: bold; cursor: pointer; border: none; background: #3d3d4a; color: #ffffff; border-radius: 12px; box-shadow: 0 4px 0 #23232b; transition: all 0.1s ease; user-select: none; }
+button:active { transform: translateY(4px); box-shadow: 0 0 0 #23232b; }
 button:hover { background: #4a4a59; }
-
-/* Highlight the math operators (+, -, *, /) */
-button:nth-child(4n), 
-button:nth-child(2), 
-button:nth-child(3) {
-  background: #ff9f0a; /* Orange operator buttons like iOS */
-  color: white;
-  box-shadow: 0 4px 0 #b36f00;
-}
-button:nth-child(4n):hover, 
-button:nth-child(2):hover, 
-button:nth-child(3):hover {
-  background: #ffb03a;
-}
-
-/* The equals button */
-.equals { 
-  background: #4af626; /* Green equals */
-  color: #1a1a21; 
-  grid-column: span 2; 
-  box-shadow: 0 4px 0 #369c1b;
-}
+button:nth-child(4n), button:nth-child(2), button:nth-child(3) { background: #ff9f0a; color: white; box-shadow: 0 4px 0 #b36f00; }
+button:nth-child(4n):hover, button:nth-child(2):hover, button:nth-child(3):hover { background: #ffb03a; }
+.equals { background: #4af626; color: #1a1a21; grid-column: span 2; box-shadow: 0 4px 0 #369c1b; }
 .equals:hover { background: #5cff38; }
-
-/* AI Section */
-.ai-row { 
-  display: flex; 
-  gap: 10px; 
-  margin-top: 20px; 
-}
-
-#aiQuestion { 
-  flex: 1; 
-  padding: 15px; 
-  font-size: 16px; 
-  border: none; 
-  border-radius: 10px; 
-  background: #1a1a21;
-  color: white;
-}
-
-#aiQuestion::placeholder { color: #888; }
-
-.ai-row button {
-  background: #007aff; /* Blue AI button */
-  box-shadow: 0 4px 0 #0056b3;
-  padding: 15px;
-  font-size: 16px;
-}
+.ai-row { display: flex; gap: 10px; margin-top: 20px; }
+#aiQuestion { flex: 1; padding: 15px; font-size: 16px; border: none; border-radius: 10px; background: #1a1a21; color: white; }
+.ai-row button { background: #007aff; box-shadow: 0 4px 0 #0056b3; padding: 15px; font-size: 16px; }
 .ai-row button:hover { background: #3395ff; }
-
-#aiAnswer { 
-  margin-top: 15px; 
-  color: #4af626; 
-  font-weight: bold; 
-  font-size: 16px; 
-  min-height: 20px;
-}
+#aiAnswer { margin-top: 15px; color: #4af626; font-weight: bold; font-size: 16px; min-height: 20px; }
