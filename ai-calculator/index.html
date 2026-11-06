@@ -3,195 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculator</title>
+  <title>Scientific Calculator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Sidebar Menu -->
-  <div id="sidebar" class="sidebar">
-    <button class="close-btn" onclick="toggleMenu()">✕</button>
-    <h2>Calculator</h2>
-    <button class="menu-item" onclick="switchMode('standard', this)">📏 Standard</button>
-    <button class="menu-item" onclick="switchMode('scientific', this)">🔬 Scientific</button>
-    <button class="menu-item" onclick="switchMode('graphing', this)">📈 Graphing</button>
-    <button class="menu-item active" onclick="switchMode('programmer', this)">💻 Programmer</button>
-    <button class="menu-item" onclick="switchMode('date', this)">📅 Date calculation</button>
-    <hr style="border-color: #3d3d4a; margin: 15px 0;">
-    <h2>Converter</h2>
-    <button class="menu-item" onclick="switchMode('currency', this)">💵 Currency</button>
-    <button class="menu-item" onclick="switchMode('volume', this)">📦 Volume</button>
-    <button class="menu-item" onclick="switchMode('length', this)">📏 Length</button>
-    <hr style="border-color: #3d3d4a; margin: auto 0 15px 0;">
-    <button class="menu-item" onclick="switchMode('settings', this)">⚙️ Settings</button>
-  </div>
 
   <!-- History Panel -->
   <div id="historyPanel" class="history-panel">
     <div class="history-header">
       <h2>History</h2>
-      <button class="close-btn" onclick="toggleHistory()">✕</button>
+      <div>
+        <button class="clear-history-btn" onclick="clearHistory()">Clear</button>
+        <button class="icon-btn" onclick="toggleHistory()">✕</button>
+      </div>
     </div>
     <ul id="historyList"></ul>
   </div>
 
-  <!-- Main App -->
-  <div class="app-container" id="mainApp">
-    <!-- Windows Title Bar -->
+  <div class="app-container">
+    <!-- Window Title Bar (Right Aligned) -->
     <div class="title-bar">
-      <div class="title-text">🧮 Calculator</div>
-      <div class="window-controls">
-        <button onclick="alert('Minimize is controlled by your browser/OS')">&#xE921;</button>
-        <button onclick="alert('Maximize is controlled by your browser/OS')">&#xE922;</button>
-        <button class="close-app" onclick="alert('Close is controlled by your browser/OS')">&#xE8BB;</button>
+      <div class="title-controls">
+        <button class="win-btn" onclick="alert('Minimize is controlled by your browser')">&#xE921;</button>
+        <button class="win-btn" onclick="alert('Maximize is controlled by your browser')">&#xE922;</button>
+        <button class="win-btn close-btn" onclick="alert('Close is controlled by your browser')">&#xE8BB;</button>
       </div>
     </div>
-
-    <!-- App Header -->
+    <!-- Header -->
     <div class="header">
-      <button class="hamburger" onclick="toggleMenu()">☰</button>
-      <h1 id="mode-title">Programmer</h1>
-      <div class="header-icons">
-        <button class="icon-btn" title="Keep on top" onclick="keepOnTop()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4h16v4M4 16v4h16v-4M8 12h8"/></svg>
-        </button>
-        <button class="icon-btn" title="History" onclick="toggleHistory()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </button>
-      </div>
+      <h1>Scientific</h1>
+      <button class="icon-btn" title="History" onclick="toggleHistory()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
+      </button>
     </div>
 
     <!-- Main Display -->
-    <input id="display" readonly placeholder="0" style="display: none;">
+    <div class="display-container">
+      <div id="equation-history"></div>
+      <input id="display" readonly placeholder="0">
+    </div>
 
-    <!-- STANDARD MODE -->
-    <div id="mode-standard" class="mode-content">
-      <!-- Standard content stays here, we don't touch it -->
-      <div class="standard-grid">
-        <button onclick="append('7')">7</button>
-        <button onclick="append('8')">8</button>
-        <button onclick="append('9')">9</button>
-        <button onclick="append('/')">÷</button>
+    <!-- Scientific Controls (Dropdowns) -->
+    <div class="sci-controls">
+      <select id="angle-mode" onchange="updateTrigIndicator()">
+        <option value="DEG">DEG</option>
+        <option value="RAD">RAD</option>
+        <option value="GRAD">GRAD</option>
+      </select>
+      <button class="dropdown-btn" onclick="showPanel('default')">Default</button>
+      <button class="dropdown-btn" onclick="showPanel('trig')">Trigonometry</button>
+      <button class="dropdown-btn" onclick="showPanel('func')">Function</button>
+    </div>
+
+    <!-- Dynamic Panels -->
+    <div id="panel-default" class="sci-panel active">
+      <div class="sci-row">
+        <button onclick="toggleSecond()">2nd</button>
+        <button onclick="append('3.141592653589793')">π</button>
+        <button onclick="append('2.718281828459045')">e</button>
+        <button onclick="toggleFE()">F-E</button>
+        <button onclick="clearEntry()">C</button>
+      </div>
+      <div class="sci-row">
+        <button id="btn-sq" onclick="square()">x²</button>
+        <button onclick="reciprocal()">1/x</button>
+        <button onclick="append('abs(')">|x|</button>
+        <button onclick="append('e+')">exp</button>
+        <button onclick="append('%')">mod</button>
       </div>
     </div>
 
-    <!-- SCIENTIFIC MODE (Hidden) -->
-    <div id="mode-scientific" class="mode-content"></div>
+    <div id="panel-trig" class="sci-panel">
+      <div class="sci-row">
+        <button onclick="toggleSecond()">2nd</button>
+        <button id="btn-sin" onclick="appendTrig('sin')">sin</button>
+        <button id="btn-cos" onclick="appendTrig('cos')">cos</button>
+        <button id="btn-tan" onclick="appendTrig('tan')">tan</button>
+        <button onclick="clearEntry()">C</button>
+      </div>
+      <div class="sci-row">
+        <button id="btn-sec" onclick="appendTrig('sec')">sec</button>
+        <button id="btn-csc" onclick="appendTrig('csc')">csc</button>
+        <button id="btn-cot" onclick="appendTrig('cot')">cot</button>
+        <button onclick="appendTrig('hyp')">hyp</button>
+        <button onclick="backspace()">x</button>
+      </div>
+    </div>
 
-    <!-- GRAPHING MODE (Hidden) -->
-    <div id="mode-graphing" class="mode-content"></div>
+    <div id="panel-func" class="sci-panel">
+      <div class="sci-row">
+        <button onclick="sciFunc('abs')">|x|</button>
+        <button onclick="sciFunc('floor')">⌊x⌋</button>
+        <button onclick="sciFunc('ceil')">⌈x⌉</button>
+        <button onclick="clearEntry()">C</button>
+        <button onclick="backspace()">x</button>
+      </div>
+      <div class="sci-row">
+        <button onclick="sciFunc('rand')">rand</button>
+        <button onclick="sciFunc('sgn')">sgn(x)</button>
+        <button onclick="append('°')">°</button>
+        <button onclick="append('′')">′</button>
+        <button onclick="append('″')">″</button>
+      </div>
+      <div class="sci-row">
+        <button onclick="convertDMS()">→dms</button>
+        <button onclick="convertDeg()">→deg</button>
+        <button onclick="sciFunc('fact')">n!</button>
+        <button onclick="sciFunc('log')">log</button>
+        <button onclick="sciFunc('ln')">ln</button>
+      </div>
+    </div>
 
-    <!-- PROGRAMMER MODE -->
-    <div id="mode-programmer" class="mode-content active">
+    <!-- Memory Row -->
+    <div class="memory-row">
+      <button onclick="memoryClear()">MC</button>
+      <button onclick="memoryRecall()">MR</button>
+      <button onclick="memoryAdd()">M+</button>
+      <button onclick="memorySubtract()">M-</button>
+      <button onclick="memoryStore()">MS</button>
+    </div>
+
+    <!-- Main Keypad -->
+    <div class="sci-grid">
+      <button onclick="squareRoot()">²√x</button>
+      <button onclick="append('(')">(</button>
+      <button onclick="append(')')">)</button>
+      <button onclick="sciFunc('pow10')">10ˣ</button>
+      <button onclick="append('/')">÷</button>
       
-      <!-- Base Displays (Clickable) -->
-      <div class="prog-bases">
-        <button class="base-row" onclick="setProgBase(16)" id="row-hex">
-          <span class="base-label">HEX</span> 
-          <span id="base-hex" class="base-val">0</span>
-        </button>
-        <button class="base-row active-base" onclick="setProgBase(10)" id="row-dec">
-          <span class="base-label">DEC</span> 
-          <span id="base-dec" class="base-val">0</span>
-        </button>
-        <button class="base-row" onclick="setProgBase(8)" id="row-oct">
-          <span class="base-label">OCT</span> 
-          <span id="base-oct" class="base-val">0</span>
-        </button>
-        <button class="base-row" onclick="setProgBase(2)" id="row-bin">
-          <span class="base-label">BIN</span> 
-          <span id="base-bin" class="base-val">0</span>
-        </button>
-      </div>
-
-      <!-- Bit Grid Toggle & Word Size -->
-      <div class="prog-controls">
-        <button onclick="toggleBitGrid()" class="icon-btn" id="btn-grid-toggle">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
-        </button>
-        <select id="wordSize" onchange="updateProgrammer()">
-          <option value="64">QWORD</option>
-          <option value="32">DWORD</option>
-          <option value="16">WORD</option>
-          <option value="8">BYTE</option>
-        </select>
-        <button class="icon-btn" onclick="alert('Memory')">MS</button>
-      </div>
-
-      <!-- Bit Grid -->
-      <div id="bitGrid" class="bit-grid" style="display: none;"></div>
-
-      <!-- Dropdowns -->
-      <div class="prog-dropdowns">
-        <button class="dropdown-btn" onclick="toggleProgPanel('bitwise')">Bitwise</button>
-        <button class="dropdown-btn" onclick="toggleProgPanel('shift')">Bit shift</button>
-      </div>
-
-      <!-- Panels -->
-      <div id="panel-bitwise" class="sci-panel" style="padding: 5px 0;">
-        <div class="sci-row" style="grid-template-columns: repeat(3, 1fr);">
-          <button onclick="bitwiseOp('AND')">AND</button>
-          <button onclick="bitwiseOp('OR')">OR</button>
-          <button onclick="bitwiseOp('NOT')">NOT</button>
-          <button onclick="bitwiseOp('NAND')">NAND</button>
-          <button onclick="bitwiseOp('NOR')">NOR</button>
-          <button onclick="bitwiseOp('XOR')">XOR</button>
-        </div>
-      </div>
-      <div id="panel-shift" class="sci-panel" style="padding: 5px 0;">
-        <div class="sci-row" style="grid-template-columns: repeat(2, 1fr);">
-          <button onclick="shiftOp('<<')"><<</button>
-          <button onclick="shiftOp('>>')">>></button>
-        </div>
-      </div>
-
-      <!-- Main Keypad -->
-      <div class="standard-grid" style="margin-top: 5px; flex: 1;">
-        <button onclick="progAppend('A')" class="prog-hex" id="btn-A">A</button>
-        <button onclick="progAppend('B')" class="prog-hex" id="btn-B">B</button>
-        <button onclick="progAppend('C')" class="prog-hex" id="btn-C">C</button>
-        <button onclick="progAppend('D')" class="prog-hex" id="btn-D">D</button>
-        <button onclick="progAppend('E')" class="prog-hex" id="btn-E">E</button>
-        <button onclick="progAppend('F')" class="prog-hex" id="btn-F">F</button>
-        <button onclick="clearDisplay()" style="color:#4af626">C</button>
-        <button onclick="append('/')">÷</button>
-        <button onclick="progAppend('7')" id="btn-7">7</button>
-        <button onclick="progAppend('8')" id="btn-8">8</button>
-        <button onclick="progAppend('9')" id="btn-9">9</button>
-        <button onclick="append('*')">×</button>
-        <button onclick="progAppend('4')" id="btn-4">4</button>
-        <button onclick="progAppend('5')" id="btn-5">5</button>
-        <button onclick="progAppend('6')" id="btn-6">6</button>
-        <button onclick="append('-')">−</button>
-        <button onclick="progAppend('1')" id="btn-1">1</button>
-        <button onclick="progAppend('2')" id="btn-2">2</button>
-        <button onclick="progAppend('3')" id="btn-3">3</button>
-        <button onclick="append('+')">+</button>
-        <button onclick="toggleSign()">+/-</button>
-        <button onclick="progAppend('0')" id="btn-0">0</button>
-        <button onclick="append('.')">.</button>
-        <button onclick="calculate()" class="equals">=</button>
-      </div>
+      <button onclick="append('^')">x^y</button>
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button onclick="append('*')">×</button>
+      
+      <button onclick="sciFunc('ln')">ln</button>
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('-')">−</button>
+      
+      <button onclick="backspace()">x</button>
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="append('+')">+</button>
+      
+      <button onclick="toggleSign()">+/-</button>
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button onclick="calculate()" class="equals" style="grid-column: span 2;">=</button>
     </div>
 
-    <!-- Placeholders -->
-    <div id="mode-date" class="mode-content"><p>Date calculation coming next...</p></div>
-    <div id="mode-currency" class="mode-content"><p>Currency converter coming next...</p></div>
-    <div id="mode-volume" class="mode-content"><p>Volume converter coming next...</p></div>
-    <div id="mode-length" class="mode-content"><p>Length converter coming next...</p></div>
-    <div id="mode-settings" class="mode-content"><p>Settings coming next...</p></div>
-
-    <!-- AI Chat -->
-    <div class="ai-container" id="aiChatContainer">
+    <!-- AI Chat Field -->
+    <div class="ai-container">
       <div class="ai-row">
         <input id="aiQuestion" placeholder="Ask AI e.g. 15% of 240">
         <button onclick="askAI()">Ask AI</button>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <p id="aiAnswer"></p>
-        <button onclick="clearAI()" style="background: #ff3b30; padding: 8px 12px; font-size: 14px; margin-left: 10px; box-shadow: 0 2px 0 #b3241d; display: none;" id="clearBtn">Clear</button>
+        <button onclick="clearAI()" style="background: #ff3b30; padding: 6px 10px; font-size: 12px; margin-left: 10px; box-shadow: 0 2px 0 #b3241d; display: none;" id="clearBtn">Clear</button>
       </div>
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
