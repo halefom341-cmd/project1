@@ -39,6 +39,16 @@ function renderHistory() {
 
 // --- Scientific Math Logic ---
 function append(val) { 
+  // Check if the calculus equation box is currently visible
+  const calcBox = document.getElementById("calc-equation");
+  const calcContainer = document.getElementById("calc-input-box");
+  
+  if (calcContainer.style.display === "block" && document.activeElement === calcBox) {
+    calcBox.value += val; // Type directly into the equation box
+    return;
+  }
+  
+  // Otherwise, type into the main display
   if (display.value === "Error") display.value = "";
   display.value += val; 
 }
@@ -203,6 +213,8 @@ function sciFunc(action) {
   let res = val;
   
   if (action === 'abs') res = Math.abs(val);
+  if (action === 'trunc') res = Math.trunc(val);
+  if (action === 'round') res = Math.round(val);
   if (action === 'sgn') res = Math.sign(val);
   if (action === 'floor') res = Math.floor(val);
   if (action === 'ceil') res = Math.ceil(val);
@@ -320,3 +332,321 @@ document.addEventListener("keydown", (e) => {
 
 
 
+
+// --- Guide Panel Logic ---
+function toggleGuide() {
+  document.getElementById("guidePanel").classList.toggle("open");
+}
+
+// --- Calculus Logic ---
+let currentCalcMode = "";
+
+function calcSum() {
+  let str = display.value;
+  if (!str.includes(',')) {
+    display.value = eval(str); 
+    return;
+  }
+  try {
+    let nums = str.split(',').map(n => parseFloat(n.trim()));
+    let sum = nums.reduce((a, b) => a + b, 0);
+    document.getElementById("equation-history").innerText = `Sum(${str})`;
+    display.value = sum;
+    addToHistory(`Sum(${str}) =`, sum);
+  } catch { display.value = "Invalid Input"; }
+}
+
+function calcDerivative() {
+  showCalcInput("derivative");
+}
+
+function calcIntegral() {
+  showCalcInput("integral");
+}
+
+function showCalcInput(mode) {
+  currentCalcMode = mode;
+  const box = document.getElementById("calc-input-box");
+  box.style.display = "block";
+  document.getElementById("calc-equation").value = "x^2"; // Default
+  document.getElementById("calc-point").value = display.value || "1";
+  document.getElementById("calc-equation").focus();
+}
+
+function executeCalculus() {
+  const eqStr = document.getElementById("calc-equation").value;
+  const xVal = parseFloat(document.getElementById("calc-point").value) || 0;
+  
+  // Create a safe function evaluator for the equation
+  // Note: Replace ^ with ** for JS, and handle implicit multiplication like 2x -> 2*x
+  let safeEq = eqStr.replace(/\^/g, '**').replace(/([0-9])([a-zA-Z])/g, '$1*$2').replace(/([a-zA-Z])([0-9])/g, '$1*$2');
+  let f;
+  try {
+    f = new Function('x', `return ${safeEq};`);
+    if (isNaN(f(xVal))) throw new Error("Invalid");
+  } catch {
+    display.value = "Invalid Equation";
+    return;
+  }
+
+  if (currentCalcMode === "derivative") {
+    let h = 0.00001;
+    let deriv = (f(xVal + h) - f(xVal - h)) / (2 * h);
+    let finalRes = parseFloat(deriv.toFixed(6));
+    
+    document.getElementById("equation-history").innerText = `d/dx (${eqStr}) at x=${xVal}`;
+    display.value = finalRes;
+    addToHistory(`d/dx (${eqStr}) at ${xVal} =`, finalRes);
+  } 
+  else if (currentCalcMode === "integral") {
+    let a = 0; // Lower bound is 0 by default
+    let b = xVal; // Upper bound is the point
+    let n = 1000;
+    let h = (b - a) / n;
+    
+    let sum = 0.5 * (f(a) + f(b));
+    for (let i = 1; i < n; i++) {
+      sum += f(a + i * h);
+    }
+    let integral = sum * h;
+    let finalRes = parseFloat(integral.toFixed(6));
+    
+    document.getElementById("equation-history").innerText = `∫ (${eqStr}) dx from 0 to ${b}`;
+    display.value = finalRes;
+    addToHistory(`∫ (${eqStr}) from 0 to ${b} =`, finalRes);
+  }
+  
+  // Hide the input box after solving
+  document.getElementById("calc-input-box").style.display = "none";
+}
+
+
+// --- Statistics Logic ---
+let dataList = [];
+let currentComboMode = "";
+
+function updateDataPreview() {
+  const preview = document.getElementById("data-preview");
+  if (preview) preview.innerText = "Data: [" + dataList.join(", ") + "]";
+}
+
+function addDataPoint() {
+  let val = parseFloat(display.value);
+  if (!isNaN(val)) {
+    dataList.push(val);
+    display.value = ""; // Clear screen for next input
+    updateDataPreview();
+  }
+}
+
+function clearDataList() {
+  dataList = [];
+  display.value = "";
+  updateDataPreview();
+}
+
+function calcStat(type) {
+  if (dataList.length === 0) {
+    display.value = "No Data";
+    return;
+  }
+  
+  let res = 0;
+  let n = dataList.length;
+  
+  if (type === 'count') res = n;
+  
+  if (type === 'mean') {
+    let sum = dataList.reduce((a, b) => a + b, 0);
+    res = sum / n;
+  }
+  
+  if (type === 'median') {
+    let sorted = [...dataList].sort((a, b) => a - b);
+    let mid = Math.floor(n / 2);
+    res = n % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
+  }
+  
+  if (type === 'mode') {
+    let counts = {};
+    let maxCount = 0;
+    dataList.forEach(val => {
+      counts[val] = (counts[val] || 0) + 1;
+      if (counts[val] > maxCount) maxCount = counts[val];
+    });
+    let modes = Object.keys(counts).filter(val => counts[val] === maxCount);
+    res = modes.length === dataList.length ? "No Mode" : modes.join(", ");
+  }
+  
+  if (type === 'sd' || type === 'var') {
+    let mean = dataList.reduce((a, b) => a + b, 0) / n;
+    let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n; // Population variance
+    if (type === 'var') res = variance;
+    if (type === 'sd') res = Math.sqrt(variance);
+  }
+  
+  if (typeof res === 'number') res = parseFloat(res.toFixed(6));
+  
+  document.getElementById("equation-history").innerText = `Stat: ${type}`;
+  display.value = res;
+  addToHistory(`Stat (${type}) =`, res);
+}
+
+// --- Combinatorics Logic ---
+function calcCombPerm(mode) {
+  currentComboMode = mode;
+  document.getElementById("combo-input-box").style.display = "block";
+  document.getElementById("combo-n").value = "";
+  document.getElementById("combo-r").value = "";
+  document.getElementById("combo-n").focus();
+}
+
+function factorial(num) {
+  if (num < 0) return 0;
+  let r = 1;
+  for (let i = 1; i <= num; i++) r *= i;
+  return r;
+}
+
+function executeCombPerm() {
+  let n = parseInt(document.getElementById("combo-n").value);
+  let r = parseInt(document.getElementById("combo-r").value);
+  
+  if (isNaN(n) || isNaN(r) || n < 0 || r < 0 || r > n) {
+    display.value = "Invalid Input";
+    document.getElementById("combo-input-box").style.display = "none";
+    return;
+  }
+  
+  let res = 0;
+  if (currentComboMode === 'nCr') {
+    res = factorial(n) / (factorial(r) * factorial(n - r));
+  } else if (currentComboMode === 'nPr') {
+    res = factorial(n) / factorial(n - r);
+  }
+  
+  document.getElementById("equation-history").innerText = `${currentComboMode}(${n}, ${r})`;
+  display.value = res;
+  addToHistory(`${currentComboMode}(${n}, ${r}) =`, res);
+  
+  document.getElementById("combo-input-box").style.display = "none";
+}
+
+
+
+
+
+// --- Raw Data Input Logic ---
+function previewRawData(val) {
+  let preview = document.getElementById("raw-data-preview");
+  if (!val) { preview.innerText = ""; return; }
+  
+  let nums = val.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+  preview.innerText = `Detected ${nums.length} numbers: [${nums.join(", ")}]`;
+}
+
+function loadRawData() {
+  let input = document.getElementById("raw-data-input").value;
+  
+  // Explicitly split by comma
+  let newData = input.split(',')
+                     .map(val => parseFloat(val.trim()))
+                     .filter(val => !isNaN(val)); 
+                     
+  if (newData.length > 0) {
+    dataList = newData; 
+    updateDataPreview();
+    
+    document.getElementById("equation-history").innerText = "Data Loaded Successfully";
+    display.value = newData.length + " items";
+    
+    document.getElementById("data-input-box").style.display = "none";
+    document.getElementById("panel-data").classList.add("active"); 
+    
+    // Clear the input for next time
+    document.getElementById("raw-data-input").value = "";
+    document.getElementById("raw-data-preview").innerText = "";
+  } else {
+    display.value = "Invalid Data";
+  }
+}
+
+// Override the showPanel function to handle the data tab specially
+const originalShowPanel = showPanel;
+showPanel = function(p) {
+  originalShowPanel(p);
+  if (p === 'data') {
+    document.getElementById("data-input-box").style.display = "block";
+    document.getElementById("raw-data-input").focus(); 
+  } else {
+    document.getElementById("data-input-box").style.display = "none";
+  }
+}
+
+// --- Data Input Logic ---
+function appendData(val) {
+  let input = document.getElementById("raw-data-input");
+  input.value += val;
+  previewRawData(input.value);
+}
+
+function previewRawData(val) {
+  let preview = document.getElementById("raw-data-preview");
+  if (!val) { preview.innerText = ""; return; }
+  
+  let nums = val.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+  preview.innerText = `Detected ${nums.length} numbers: [${nums.join(", ")}]`;
+}
+
+function loadRawData() {
+  let input = document.getElementById("raw-data-input").value;
+  
+  let newData = input.split(',')
+                     .map(val => parseFloat(val.trim()))
+                     .filter(val => !isNaN(val)); 
+                     
+  if (newData.length > 0) {
+    dataList = newData; 
+    updateDataPreview();
+    
+    document.getElementById("equation-history").innerText = "Data Loaded Successfully";
+    display.value = newData.length + " items";
+    
+    document.getElementById("data-input-box").style.display = "none";
+    document.getElementById("panel-data").classList.add("active"); 
+    
+    document.getElementById("raw-data-input").value = "";
+    document.getElementById("raw-data-preview").innerText = "";
+  } else {
+    display.value = "Invalid Data";
+  }
+}
+
+// 2. Intercept the standard append function
+const originalAppendData = append;
+append = function(val) {
+  let dataInputBox = document.getElementById("data-input-box");
+  
+  // If the Data tab is open and visible, type into the Data box instead of the calculator!
+  if (dataInputBox && dataInputBox.style.display === "block") {
+    appendData(val);
+    return;
+  }
+  
+  // Otherwise, do standard calculator behavior
+  originalAppendData(val);
+}
+
+// 3. Show/hide Data panel correctly
+const originalShowPanelData = showPanel;
+showPanel = function(p) {
+  originalShowPanelData(p);
+  if (p === 'data') {
+    document.getElementById("data-input-box").style.display = "block";
+    // Clear the text input when opening
+    document.getElementById("raw-data-input").value = "";
+    document.getElementById("raw-data-preview").innerText = "";
+  } else {
+    document.getElementById("data-input-box").style.display = "none";
+  }
+}

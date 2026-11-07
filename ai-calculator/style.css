@@ -1,31 +1,113 @@
 ﻿* { box-sizing: border-box; }
 body { 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-  margin: 0; background: #1e1e24; color: white; 
+  margin: 0; background: #121212; color: white; 
   display: flex; justify-content: center; align-items: center; 
   height: 100vh; overflow: hidden;
 }
 
 .app-container { 
-  background: #2b2b36; 
+  background: #1e1e24; 
   width: 100%; max-width: 400px; height: 100vh; max-height: 800px;
   display: flex; flex-direction: column; 
-  padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  position: relative; overflow: hidden;
 }
 
-/* Header */
-.header { margin-bottom: 10px; }
-.header h1 { margin: 0; font-size: 20px; font-weight: 600; }
 
-/* Display */
-#display { 
-  width: 100%; padding: 15px; font-size: 32px; text-align: right; 
-  border: none; border-radius: 8px; background: #1a1a21; color: #4af626;
-  font-family: 'Courier New', Courier, monospace; font-weight: bold;
-  box-shadow: inset 0 3px 8px rgba(0,0,0,0.6); margin-bottom: 10px; outline: none;
+
+
+/* --- ROW 1: Title Bar --- */
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a1a21;
+  height: 32px;
+  margin: -15px -15px 0 -15px; 
+  padding-left: 10px;
 }
 
-/* Controls (Dropdowns) */
+.title-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-text {
+  color: #aaa;
+  font-size: 13px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.title-controls {
+  display: flex;
+  height: 100%;
+}
+
+.win-btn {
+  background: transparent; 
+  border: none; 
+  width: 45px; 
+  height: 100%;
+  color: #aaa; 
+  font-family: 'Segoe MDL2 Assets', sans-serif; 
+  font-size: 10px;
+  cursor: pointer; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+}
+.win-btn:hover { background: #3d3d4a; color: white; }
+.win-btn.close-btn:hover { background: #e81123; color: white; }
+
+/* --- ROW 2: App Header --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 5px 10px 5px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+  color: white;
+  font-weight: 600;
+}
+
+.icon-btn {
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
+  color: #aaa; 
+  padding: 5px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+}
+.icon-btn:hover { color: white; background: transparent; }
+
+/* Mini Calculator Icon */
+.mini-calc {
+  width: 20px; height: 24px; background: #2b2b36; border: 1px solid #3d3d4a;
+  border-radius: 3px; padding: 2px; display: flex; flex-direction: column; gap: 1px;
+}
+.mini-display { width: 100%; height: 4px; background: #1a1a21; border: 1px solid #4af626; border-radius: 1px; }
+.mini-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; flex: 1; }
+.mini-btn { background: #3d3d4a; border-radius: 1px; }.display-container {
+  display: flex; flex-direction: column; background: #1a1a21;
+  border-radius: 8px; padding: 10px 15px; margin-bottom: 10px;
+  box-shadow: inset 0 3px 8px rgba(0,0,0,0.6);
+}
+#equation-history { text-align: right; color: #888; font-size: 16px; min-height: 20px; }
+#display {
+  width: 100%; padding: 0; font-size: 32px; text-align: right; border: none;
+  background: transparent; color: #4af626; font-family: 'Courier New', monospace;
+  font-weight: bold; outline: none;
+}
+
+/* Controls */
 .sci-controls { display: flex; gap: 5px; margin-bottom: 10px; }
 .sci-controls select, .dropdown-btn { 
   background: #1a1a21; color: #aaa; border: none; padding: 8px; 
@@ -33,21 +115,23 @@ body {
 }
 .dropdown-btn:hover { background: #3d3d4a; color: white; }
 
-/* Dynamic Panels */
+/* Panels */
 .sci-panel { display: none; flex-direction: column; gap: 5px; margin-bottom: 10px; }
 .sci-panel.active { display: flex; }
 .sci-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
 
+/* Memory Row */
+.memory-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
+.memory-row button { background: transparent; color: #888; font-size: 14px; padding: 8px 0; box-shadow: none; font-weight: 600; }
+.memory-row button:hover { color: #4af626; background: transparent; }
+
 /* Main Keypad */
 .sci-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; flex: 1; margin-bottom: 10px; }
 
-/* Global Button Styles */
 button { 
-  padding: 10px 0; font-size: 18px; font-weight: 600; 
-  cursor: pointer; border: none; background: #3d3d4a; color: #ffffff; 
-  border-radius: 8px; box-shadow: 0 2px 0 #23232b; 
-  transition: all 0.1s; user-select: none; 
-  display: flex; justify-content: center; align-items: center;
+  padding: 10px 0; font-size: 18px; font-weight: 600; cursor: pointer; border: none; 
+  background: #3d3d4a; color: #ffffff; border-radius: 8px; box-shadow: 0 2px 0 #23232b; 
+  transition: all 0.1s; user-select: none; display: flex; justify-content: center; align-items: center;
 }
 button:active { transform: translateY(2px); box-shadow: 0 0 0 #23232b; }
 button:hover { background: #4a4a59; }
@@ -57,6 +141,21 @@ button:nth-child(4n), button:nth-child(2), button:nth-child(3) { color: #4af626;
 .equals { background: #007aff !important; color: white !important; box-shadow: 0 2px 0 #0056b3 !important; font-size: 24px !important; }
 .equals:hover { background: #0062cc !important; }
 
+/* History Sidebar */
+.history-panel {
+  position: fixed; right: -300px; top: 0; bottom: 0; width: 300px; background: #1e1e24;
+  border-left: 1px solid #3d3d4a; padding: 20px; transition: 0.3s; z-index: 1000;
+  display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+}
+.history-panel.open { right: 0; }
+.history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #3d3d4a; padding-bottom: 10px; }
+.history-header h2 { margin: 0; font-size: 20px; color: white; font-weight: 600; }
+.clear-history-btn { background: transparent; color: #ff3b30; border: none; font-size: 14px; cursor: pointer; padding: 5px 10px; box-shadow: none; }
+.clear-history-btn:hover { background: rgba(255, 59, 48, 0.1); color: #ff3b30; }
+#historyList { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex: 1; }
+#historyList li { padding: 12px 0; border-bottom: 1px solid #2b2b36; color: #aaa; font-family: 'Courier New', monospace; font-size: 16px; text-align: right; word-wrap: break-word; }
+#historyList li .hist-result { display: block; color: #4af626; font-size: 20px; font-weight: bold; margin-top: 5px; }
+
 /* AI Chat */
 .ai-container { margin-top: auto; border-top: 1px solid #3d3d4a; padding-top: 10px; }
 .ai-row { display: flex; gap: 8px; }
@@ -64,176 +163,81 @@ button:nth-child(4n), button:nth-child(2), button:nth-child(3) { color: #4af626;
 .ai-row button { background: #007aff; box-shadow: 0 2px 0 #0056b3; padding: 10px 15px; font-size: 14px; border-radius: 8px; }
 #aiAnswer { color: #4af626; font-weight: bold; font-size: 14px; min-height: 20px; margin: 8px 0 0 0; }
 
-/* Memory Row */
-.memory-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 5px;
-  margin-bottom: 10px;
-}
-.memory-row button {
-  background: transparent;
-  color: #888;
-  font-size: 14px;
-  padding: 8px 0;
-  box-shadow: none;
-  font-weight: 600;
-}
-.memory-row button:hover { color: #4af626; background: transparent; }
 
-/* Equation History Display */
+
+/* Shrink Display Height */
 .display-container {
-  display: flex;
-  flex-direction: column;
-  background: #1a1a21;
-  border-radius: 8px;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  box-shadow: inset 0 3px 8px rgba(0,0,0,0.6);
-}
-#equation-history {
-  text-align: right;
-  color: #888;
-  font-size: 16px;
-  min-height: 20px;
-  font-family: 'Segoe UI', sans-serif;
+  padding: 5px 15px !important;
+  margin-bottom: 5px !important;
+  min-height: 50px;
 }
 #display {
-  width: 100%;
-  padding: 0;
-  font-size: 32px;
-  text-align: right;
-  border: none;
-  background: transparent;
-  color: #4af626;
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: bold;
-  margin-bottom: 0;
-  outline: none;
+  font-size: 28px !important; /* Slightly smaller text */
 }
 
-/* Header adjustment for the History Icon */
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.icon-btn { background: transparent; border: none; cursor: pointer; color: #aaa; padding: 5px; box-shadow: none; }
-.icon-btn:hover { color: white; background: transparent; }
-
-/* History Panel */
-.history-panel {
-  position: fixed;
-  right: -300px;
-  top: 0;
-  bottom: 0;
-  width: 300px;
-  background: #1e1e24;
-  border-left: 1px solid #3d3d4a;
-  padding: 20px;
-  transition: 0.3s;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+/* Adjust AI Chat spacing */
+.ai-container {
+  padding-bottom: 5px !important;
 }
-.history-panel.open { right: 0; }
 
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #3d3d4a;
-  padding-bottom: 10px;
-}
-.history-header h2 { margin: 0; font-size: 20px; color: white; font-weight: 600; }
-.clear-history-btn {
-  background: transparent;
-  color: #ff3b30;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 5px 10px;
-  box-shadow: none;
-  margin-right: 10px;
-}
-.clear-history-btn:hover { background: rgba(255, 59, 48, 0.1); color: #ff3b30; }
+/* Adjust Scientific panels spacing to save room */
+.sci-controls { margin-bottom: 5px; }
+.sci-panel { margin-bottom: 5px; gap: 4px; }
+.sci-row { gap: 4px; }
+.memory-row { margin-bottom: 5px; }
+.sci-grid { margin-bottom: 5px; gap: 4px; }
 
-#historyList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* Increase AI Chat Height */
+#aiQuestion {
+  padding: 16px 15px !important; /* Increased padding from 12px to 16px */
+  font-size: 16px !important; /* Slightly larger text */
+}
+
+.ai-row button {
+  padding: 16px 20px !important; /* Taller button to match input */
+  font-size: 15px !important;
+}
+
+#aiAnswer {
+  font-size: 15px !important;
+  margin-top: 10px !important;
+}
+
+/* Make AI Chat Input and Button Much Taller */
+#aiQuestion {
+  padding: 22px 18px !important; /* Much larger padding */
+  font-size: 18px !important; /* Larger text */
+  border-radius: 12px !important; 
+}
+
+.ai-row button {
+  padding: 22px 25px !important; /* Taller button to match */
+  font-size: 18px !important;
+  border-radius: 12px !important;
+}
+
+/* Add a little more breathing room around the chat area */
+.ai-container {
+  padding: 15px 10px !important;
+}
+
+/* Make the dynamic panels scrollable if they get too tall */
+.sci-panel {
+  max-height: 200px; /* Limits the height */
+  overflow-y: auto;  /* Adds a scrollbar if needed */
+  padding-right: 2px; /* Prevents scrollbar from overlapping buttons */
+}
+
+/* Hide scrollbar for a cleaner look */
+.sci-panel::-webkit-scrollbar { display: none; }
+.sci-panel { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Ensure the panels stay contained and scrollable */
+.sci-panel {
+  max-height: 200px;
   overflow-y: auto;
-  flex: 1;
+  overflow-x: hidden;
+  flex-shrink: 0; 
 }
-#historyList li {
-  padding: 12px 0;
-  border-bottom: 1px solid #2b2b36;
-  color: #aaa;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 16px;
-  text-align: right;
-  word-wrap: break-word;
-}
-#historyList li .hist-result {
-  display: block;
-  color: #4af626;
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-/* Windows Title Bar */
-.title-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #e6e6e6; /* Light gray from screenshot */
-  height: 32px;
-  padding: 0 5px;
-  border-radius: 8px 8px 0 0;
-  border-bottom: 1px solid #d1d1d1;
-  margin: -15px -15px 10px -15px; /* Stretch to edges of app-container */
-}
-
-.title-controls {
-  display: flex;
-  gap: 2px;
-}
-
-.win-btn {
-  background: transparent;
-  border: none;
-  width: 42px;
-  height: 30px;
-  font-family: 'Segoe MDL2 Assets', 'Segoe UI Symbol', sans-serif; /* Uses Windows system font for exact icons */
-  font-size: 10px;
-  color: #333;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  border-radius: 4px;
-  box-shadow: none;
-}
-
-.win-btn:hover {
-  background: #d1d1d1;
-  color: #000;
-}
-
-.win-btn.close-btn:hover {
-  background: #e81123;
-  color: white;
-}
-
-.title-text {
-  color: #333;
-  font-size: 13px;
-  font-family: 'Segoe UI', sans-serif;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-
-
-
+.sci-panel::-webkit-scrollbar { display: none; }
+.sci-panel { -ms-overflow-style: none; scrollbar-width: none; }
