@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- History Panel (Slides from right) -->
+  <!-- History Panel -->
   <div id="historyPanel" class="history-panel">
     <div class="history-header">
       <h2>History</h2>
@@ -20,7 +20,6 @@
     <ul id="historyList"></ul>
   </div>
 
-  <!-- Main App Wrapper -->
   <div class="app-container">
     
     <!-- Title Bar -->
@@ -42,8 +41,8 @@
       </div>
     </div>
 
-    <!-- App Header (History Icon) -->
-    <div class="header" style="justify-content: flex-end; padding: 5px 5px 5px 5px;">
+    <!-- Header (History Icon) -->
+    <div class="header" style="justify-content: flex-end; padding: 5px;">
       <button class="icon-btn" title="History" onclick="toggleHistory()">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
       </button>
@@ -55,7 +54,7 @@
       <input id="display" readonly placeholder="0">
     </div>
 
-    <!-- Control Tabs -->
+    <!-- Tabs -->
     <div class="sci-controls">
       <select id="angle-mode" onchange="updateTrigIndicator()">
         <option value="DEG">DEG</option>
@@ -63,41 +62,17 @@
         <option value="GRAD">GRAD</option>
       </select>
       <button class="dropdown-btn" onclick="showPanel('default')">Default</button>
-      <button class="dropdown-btn" onclick="showPanel('trig')">Trigonometry</button>
-      <button class="dropdown-btn" onclick="showPanel('func')">Function</button>
-      <button class="dropdown-btn" onclick="showPanel('data')">Data</button>
+      <button class="dropdown-btn" onclick="showPanel('trig')">Trig</button>
+      <button class="dropdown-btn" onclick="showPanel('func')">Func</button>
+      <button class="dropdown-btn" onclick="showPanel('logic')">Logic</button>
     </div>
 
-    <!-- Hidden Input Fields -->
-    <div id="calc-input-box" style="display: none; padding-bottom: 10px;">
-      <input type="text" id="calc-equation" placeholder="Equation (e.g. 3x^2)" style="width: 100%; padding: 10px; margin-bottom: 5px; background: #1a1a21; color: white; border: 1px solid #4af626; border-radius: 4px;">
-      <div style="display: flex; gap: 5px;">
-        <input type="number" id="calc-point" placeholder="x =" style="flex: 1; padding: 10px; background: #1a1a21; color: white; border: 1px solid #3d3d4a; border-radius: 4px;">
-        <button onclick="executeCalculus()" style="flex: 1; background: #4af626; color: black;">Solve</button>
-      </div>
-    </div>
+    <!-- ================= PANELS ================= -->
 
-    <div id="combo-input-box" style="display: none; padding-bottom: 10px;">
-      <div style="display: flex; gap: 5px;">
-        <input type="number" id="combo-n" placeholder="n" style="flex: 1; padding: 10px; background: #1a1a21; color: white; border: 1px solid #4af626; border-radius: 4px;">
-        <input type="number" id="combo-r" placeholder="r" style="flex: 1; padding: 10px; background: #1a1a21; color: white; border: 1px solid #4af626; border-radius: 4px;">
-        <button onclick="executeCombPerm()" style="flex: 1; background: #4af626; color: black;">Solve</button>
-      </div>
-    </div>
-
-    <div id="data-input-box" style="display: none; padding-bottom: 10px;">
-      <input type="text" id="raw-data-input" placeholder="e.g. 5, 10, 15" style="width: 100%; padding: 10px; margin-bottom: 5px; background: #1a1a21; color: white; border: 1px solid #4af626; border-radius: 4px;" oninput="previewRawData(this.value)">
-      <div style="color: #4af626; font-size: 12px; min-height: 16px;" id="raw-data-preview"></div>
-      <div style="display: flex; gap: 5px; margin-top: 5px;">
-        <button onclick="loadRawData()" style="flex: 1; background: #4af626; color: black;">Load Data</button>
-        <button onclick="clearDataList()" style="flex: 1; background: #3d3d4a;">Clear</button>
-      </div>
-    </div>
-
-    <!-- Dynamic Panels -->
+    <!-- Default Panel -->
     <div id="panel-default" class="sci-panel active">
       <div class="sci-row">
-        <button onclick="toggleSecond()">2nd</button>
+        <button onclick="toggleSecond(event)">2nd</button>
         <button onclick="append('3.141592653589793')">π</button>
         <button onclick="append('2.718281828459045')">e</button>
         <button onclick="toggleFE()">F-E</button>
@@ -112,9 +87,10 @@
       </div>
     </div>
 
+    <!-- Trig Panel -->
     <div id="panel-trig" class="sci-panel">
       <div class="sci-row">
-        <button onclick="toggleSecond()">2nd</button>
+        <button onclick="toggleSecond(event)">2nd</button>
         <button id="btn-sin" onclick="appendTrig('sin')">sin</button>
         <button id="btn-cos" onclick="appendTrig('cos')">cos</button>
         <button id="btn-tan" onclick="appendTrig('tan')">tan</button>
@@ -124,58 +100,136 @@
         <button id="btn-sec" onclick="appendTrig('sec')">sec</button>
         <button id="btn-csc" onclick="appendTrig('csc')">csc</button>
         <button id="btn-cot" onclick="appendTrig('cot')">cot</button>
-        <button onclick="appendTrig('hyp')">hyp</button>
+        <button id="btn-hyp" onclick="appendTrig('hyp')">hyp</button>
         <button onclick="backspace()">x</button>
       </div>
     </div>
 
-    <div id="panel-func" class="sci-panel">
+    <!-- Function Panel -->
+    <div id="panel-func" class="sci-panel" style="overflow-y: auto;">
+      
+      <!-- ROW 1: Basic Math & Integer Functions -->
       <div class="sci-row">
-        <button onclick="sciFunc('abs')">|x|</button>
         <button onclick="sciFunc('floor')">⌊x⌋</button>
         <button onclick="sciFunc('ceil')">⌈x⌉</button>
-        <button onclick="sciFunc('trunc')">trunc</button>
-        <button onclick="sciFunc('round')">round</button>
-      </div>
-      <div class="sci-row">
-        <button onclick="sciFunc('rand')">rand</button>
         <button onclick="sciFunc('sgn')">sgn(x)</button>
-        <button onclick="append('°')">°</button>
-        <button onclick="append('′')">′</button>
-        <button onclick="append('″')">″</button>
+        <button onclick="sciFunc('round')">round</button>
+        <button onclick="sciFunc('trunc')">trunc</button>
       </div>
+
+      <!-- ROW 2: Calculus -->
       <div class="sci-row">
+        <button onclick="calcDerivative()" class="btn-green">f'(x)</button>
+        <button onclick="calcIntegral()" class="btn-green">∫</button>
         <button onclick="convertDMS()">→dms</button>
         <button onclick="convertDeg()">→deg</button>
-        <button onclick="sciFunc('fact')">n!</button>
-        <button onclick="sciFunc('log')">log</button>
-        <button onclick="sciFunc('ln')">ln</button>
-      </div>
-      <div class="sci-row">
         <button onclick="append('x')" style="color:#4af626">x</button>
-        <button onclick="append('y')" style="color:#4af626">y</button>
-        <button onclick="calcStat('sum')" style="color:#4af626">Σ</button>
-        <button onclick="calcDerivative()" style="color:#4af626">f'(x)</button>
-        <button onclick="calcIntegral()" style="color:#4af626">∫</button>
       </div>
+
+      <!-- ROW 3: Statistics (Ordered) -->
       <div class="sci-row">
-        <button onclick="addDataPoint()" style="color:#4af626">Add</button>
-        <button onclick="clearDataList()">Clear</button>
-        <button onclick="calcStat('count')">n</button>
-        <button onclick="calcStat('mean')">x̄</button>
-        <button onclick="calcStat('median')">Med</button>
+        <button onclick="calcStat('count')" class="btn-purple">n</button>
+        <button onclick="calcStat('sum')" class="btn-purple">Σ</button>
+        <button onclick="calcStat('mean')" class="btn-purple">x̄</button>
+        <button onclick="calcStat('median')" class="btn-purple">Med</button>
+        <button onclick="calcStat('mode')" class="btn-purple">Mode</button>
       </div>
+
+      <!-- ROW 4: Statistics continued -->
       <div class="sci-row">
-        <button onclick="calcStat('mode')">Mode</button>
-        <button onclick="calcStat('sd')">σ</button>
-        <button onclick="calcStat('var')">s²</button>
-        <button onclick="calcCombPerm('nCr')">nCr</button>
-        <button onclick="calcCombPerm('nPr')">nPr</button>
+        <button onclick="calcStat('var')" class="btn-purple">s²</button>
+        <button onclick="calcStat('sd')" class="btn-purple">σ</button>
+        <button onclick="calcAllStats()" class="btn-purple" style="grid-column: span 3;">Summary</button>
       </div>
-      <div class="sci-row" style="grid-template-columns: repeat(1, 1fr);">
-        <button onclick="calcAllStats()" style="color:#4af626; padding: 10px;">Summary</button>
+
+      <!-- Data Entry Keypad (Integrated) -->
+      <div style="background: #1a1a21; padding: 8px; border-radius: 8px; margin-top: 5px; border: 1px solid #3d3d4a;">
+        <input type="text" id="raw-data-input" readonly placeholder="Data (comma sep.)" style="width: 100%; padding: 6px; margin-bottom: 5px; background: #2b2b36; color: #4af626; border: 1px solid #4af626; border-radius: 4px; font-family: monospace; font-size: 14px; text-align: right;">
+        
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button onclick="appendData('7')">7</button>
+          <button onclick="appendData('8')">8</button>
+          <button onclick="appendData('9')">9</button>
+          <button onclick="appendData(',')" style="color:#4af626">,</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button onclick="appendData('4')">4</button>
+          <button onclick="appendData('5')">5</button>
+          <button onclick="appendData('6')">6</button>
+          <button onclick="dataBackspace()">⌫</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button onclick="appendData('1')">1</button>
+          <button onclick="appendData('2')">2</button>
+          <button onclick="appendData('3')">3</button>
+          <button onclick="loadRawData()" class="btn-green">Load</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr);">
+          <button onclick="appendData('0')">0</button>
+          <button onclick="appendData('.')">.</button>
+          <button onclick="appendData(' ')">Spc</button>
+          <button onclick="clearDataList()" style="color:#ff3b30">AC</button>
+        </div>
+        <div style="text-align: center; font-size: 11px; color: #aaa; margin-top: 5px;" id="data-preview">Data: []</div>
       </div>
     </div>
+
+    <!-- Logic Panel -->
+    <div id="panel-logic" class="sci-panel">
+      <div class="sci-row" style="grid-template-columns: 1fr; margin-bottom: 5px;">
+        <select id="logic-base" onchange="changeLogicBase()" style="padding: 6px; border-radius: 6px; background: #1a1a21; color: white; border: 1px solid #4af626; text-align: center;">
+          <option value="10">DEC</option>
+          <option value="2">BIN</option>
+          <option value="8">OCT</option>
+          <option value="16">HEX</option>
+        </select>
+      </div>
+      <div style="background: #1a1a21; padding: 8px; border-radius: 8px; margin-bottom: 5px;">
+        <input type="text" id="logic-input" readonly placeholder="Expression..." style="width: 100%; padding: 6px; margin-bottom: 5px; background: #2b2b36; color: #4af626; border: 1px solid #4af626; border-radius: 4px; font-family: monospace; font-size: 16px; text-align: right;">
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button class="btn-blue" id="btn-logic-A" onclick="logicAppend('A')">A</button>
+          <button class="btn-blue" id="btn-logic-B" onclick="logicAppend('B')">B</button>
+          <button class="btn-blue" id="btn-logic-C" onclick="logicAppend('C')">C</button>
+          <button class="btn-blue" id="btn-logic-D" onclick="logicAppend('D')">D</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button class="btn-blue" id="btn-logic-E" onclick="logicAppend('E')">E</button>
+          <button class="btn-blue" id="btn-logic-F" onclick="logicAppend('F')">F</button>
+          <button onclick="logicClear()" style="color:#ff3b30">AC</button>
+          <button onclick="logicBackspace()">⌫</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button id="btn-logic-7" onclick="logicAppend('7')">7</button>
+          <button id="btn-logic-8" onclick="logicAppend('8')">8</button>
+          <button id="btn-logic-9" onclick="logicAppend('9')">9</button>
+          <button onclick="logicCalculate()" class="btn-green">=</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button id="btn-logic-4" onclick="logicAppend('4')">4</button>
+          <button id="btn-logic-5" onclick="logicAppend('5')">5</button>
+          <button id="btn-logic-6" onclick="logicAppend('6')">6</button>
+          <button onclick="logicOp('AND')" class="btn-blue">AND</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button onclick="logicAppend('1')">1</button>
+          <button id="btn-logic-2" onclick="logicAppend('2')">2</button>
+          <button id="btn-logic-3" onclick="logicAppend('3')">3</button>
+          <button onclick="logicOp('OR')" class="btn-blue">OR</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 5px;">
+          <button onclick="logicAppend('0')" style="grid-column: span 2;">0</button>
+          <button onclick="logicOp('NOT')" class="btn-blue">NOT</button>
+          <button onclick="logicOp('XOR')" class="btn-blue">XOR</button>
+        </div>
+        <div class="sci-row" style="grid-template-columns: repeat(3, 1fr);">
+          <button onclick="logicOp('NAND')" class="btn-blue">NAND</button>
+          <button onclick="logicOp('NOR')" class="btn-blue">NOR</button>
+          <button onclick="logicOp('XNOR')" class="btn-blue">XNOR</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= END PANELS ================= -->
 
     <!-- Memory Row -->
     <div class="memory-row">
@@ -229,8 +283,13 @@
         <button onclick="clearAI()" style="background: #ff3b30; padding: 6px 10px; font-size: 12px; margin-left: 10px; box-shadow: 0 2px 0 #b3241d; display: none;" id="clearBtn">Clear</button>
       </div>
     </div>
-  </div> <!-- END OF APP CONTAINER -->
+  </div>
 
   <script src="script.js"></script>
 </body>
 </html>
+
+
+
+
+

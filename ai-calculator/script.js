@@ -1,136 +1,41 @@
-﻿let display = document.getElementById("display");
-let isFE = false;
+﻿// GLOBAL VARIABLES
+let display = document.getElementById("display");
 let isSecondFunc = false;
-
-// --- History Logic ---
+let dataList = [];
 let historyData = [];
+let currentBase = 10;
 
-function toggleHistory() {
-  document.getElementById("historyPanel").classList.toggle("open");
+// --- Navigation ---
+function showPanel(p) { 
+  document.querySelectorAll(".sci-panel").forEach(el => el.classList.remove("active")); 
+  let panel = document.getElementById(`panel-${p}`);
+  if (panel) panel.classList.add("active");
 }
 
-function addToHistory(equation, result) {
-  historyData.unshift({ eq: equation, res: result }); // Add to top
-  if (historyData.length > 50) historyData.pop(); // Limit to 50 items
-  renderHistory();
-}
-
-function clearHistory() {
-  historyData = [];
-  renderHistory();
-}
-
-function renderHistory() {
-  const list = document.getElementById("historyList");
-  list.innerHTML = "";
-  if (historyData.length === 0) {
-    list.innerHTML = "<li style='color:#666; text-align:center; border:none;'>No history yet</li>";
-    return;
-  }
-  historyData.forEach(item => {
-    let li = document.createElement("li");
-    li.innerHTML = `${item.eq} <span class="hist-result">${item.res}</span>`;
-    // Optional: Click history item to load it
-    li.onclick = () => { display.value = item.res; };
-    li.style.cursor = "pointer";
-    list.appendChild(li);
-  });
-}
-
-// --- Scientific Math Logic ---
+// --- Core Math ---
 function append(val) { 
-  // Check if the calculus equation box is currently visible
-  const calcBox = document.getElementById("calc-equation");
-  const calcContainer = document.getElementById("calc-input-box");
-  
-  if (calcContainer.style.display === "block" && document.activeElement === calcBox) {
-    calcBox.value += val; // Type directly into the equation box
-    return;
-  }
-  
-  // Otherwise, type into the main display
-  if (display.value === "Error") display.value = "";
+  if (display.value === "Error" || display.value === "Invalid Input") display.value = "";
   display.value += val; 
 }
-function backspace() { display.value = display.value.slice(0, -1); }
 function clearEntry() { display.value = ""; }
+function backspace() { display.value = display.value.slice(0, -1); }
+function square() { try { display.value = Math.pow(eval(display.value), 2); } catch { display.value = "Error"; } }
+function squareRoot() { try { display.value = Math.sqrt(eval(display.value)); } catch { display.value = "Error"; } }
+function reciprocal() { try { display.value = 1 / eval(display.value); } catch { display.value = "Error"; } }
 function toggleSign() { if(display.value) display.value = display.value.startsWith("-") ? display.value.substring(1) : "-" + display.value; }
-
-function square() { 
-  try { 
-    let val = eval(display.value);
-    display.value = isSecondFunc ? Math.pow(val, 3) : Math.pow(val, 2); 
-  } catch { display.value = "Error"; } 
-}
-
-function squareRoot() { 
-  try { 
-    let val = eval(display.value); 
-    if (val < 0) { display.value = "Invalid Input"; return; }
-    display.value = Math.sqrt(val); 
-  } catch { display.value = "Invalid Input"; } 
-}
-function reciprocal() { 
-  try { 
-    let val = eval(display.value); 
-    if (val === 0) { display.value = "Invalid Input"; return; }
-    display.value = 1 / val; 
-  } catch { display.value = "Invalid Input"; } 
-}
-
-// F-E Toggle Logic
-function toggleFE() {
-  isFE = !isFE;
-  if (isFE) {
-    let val = 0;
-    try { val = eval(display.value); } catch { val = 0; }
-    if (isNaN(val) || val === 0) { display.value = "0.e+0"; return; }
-    display.value = val.toExponential();
-  } else {
-    let val = 0;
-    try { val = eval(display.value); } catch { val = 0; }
-    display.value = val.toString();
-  }
-}
+function toggleFE() { alert("F-E toggled"); }
 
 function calculate() { 
     try { 
-        let originalExpr = display.value;
-        let expr = originalExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/\^/g, '**');
-        let result = eval(expr); 
-        
-        if (!Number.isFinite(result) || isNaN(result)) {
-            display.value = "Invalid Input";
-        } else {
-            let finalResult = parseFloat(result.toFixed(10));
-            display.value = finalResult;
-            // Save to history
-            if (originalExpr.trim() !== "") {
-                addToHistory(originalExpr + " =", finalResult);
-            }
-        }
-        isFE = false; 
+        let expr = display.value.replace(/×/g, '*').replace(/÷/g, '/').replace(/\^/g, '**');
+        let res = eval(expr);
+        display.value = Number.isFinite(res) ? parseFloat(res.toFixed(10)) : "Invalid Input";
+        addToHistory(expr, display.value);
     } catch { display.value = "Invalid Input"; } 
 }
 
-// Panels (Trig, Func)
-function showPanel(p) { 
-  document.querySelectorAll(".sci-panel").forEach(el => el.classList.remove("active")); 
-  
-  let panel = document.getElementById(`panel-${p}`);
-  if (panel) panel.classList.add("active");
-  
-  document.getElementById("data-input-box").style.display = "none";
-  document.getElementById("calc-input-box").style.display = "none";
-  document.getElementById("combo-input-box").style.display = "none";
-
-  if (p === 'data') {
-    document.getElementById("data-input-box").style.display = "block";
-  }
-}
-
-// --- 2nd Function Toggle ---
-function toggleSecond() {
+// --- Trig ---
+function toggleSecond(e) {
   isSecondFunc = !isSecondFunc;
   
   const sinBtn = document.getElementById("btn-sin");
@@ -139,112 +44,86 @@ function toggleSecond() {
   const secBtn = document.getElementById("btn-sec");
   const cscBtn = document.getElementById("btn-csc");
   const cotBtn = document.getElementById("btn-cot");
-  const sqBtn = document.getElementById("btn-sq");
+  const hypBtn = document.getElementById("btn-hyp");
 
   if (isSecondFunc) {
-    if(sinBtn) sinBtn.innerText = "sin⁻¹";
-    if(cosBtn) cosBtn.innerText = "cos⁻¹";
-    if(tanBtn) tanBtn.innerText = "tan⁻¹";
-    if(secBtn) secBtn.innerText = "sec⁻¹";
-    if(cscBtn) cscBtn.innerText = "csc⁻¹";
-    if(cotBtn) cotBtn.innerText = "cot⁻¹";
-    if(sqBtn) sqBtn.innerText = "x³";
+    if (sinBtn) { sinBtn.innerText = "sin⁻¹"; sinBtn.style.color = "#4af626"; }
+    if (cosBtn) { cosBtn.innerText = "cos⁻¹"; cosBtn.style.color = "#4af626"; }
+    if (tanBtn) { tanBtn.innerText = "tan⁻¹"; tanBtn.style.color = "#4af626"; }
+    if (secBtn) { secBtn.innerText = "sec⁻¹"; secBtn.style.color = "#4af626"; }
+    if (cscBtn) { cscBtn.innerText = "csc⁻¹"; cscBtn.style.color = "#4af626"; }
+    if (cotBtn) { cotBtn.innerText = "cot⁻¹"; cotBtn.style.color = "#4af626"; }
+    if (hypBtn) { hypBtn.innerText = "hyp⁻¹"; hypBtn.style.color = "#4af626"; }
+    if (e && e.target) { e.target.style.color = "#4af626"; }
   } else {
-    if(sinBtn) sinBtn.innerText = "sin";
-    if(cosBtn) cosBtn.innerText = "cos";
-    if(tanBtn) tanBtn.innerText = "tan";
-    if(secBtn) secBtn.innerText = "sec";
-    if(cscBtn) cscBtn.innerText = "csc";
-    if(cotBtn) cotBtn.innerText = "cot";
-    if(sqBtn) sqBtn.innerText = "x²";
+    if (sinBtn) { sinBtn.innerText = "sin"; sinBtn.style.color = "white"; }
+    if (cosBtn) { cosBtn.innerText = "cos"; cosBtn.style.color = "white"; }
+    if (tanBtn) { tanBtn.innerText = "tan"; tanBtn.style.color = "white"; }
+    if (secBtn) { secBtn.innerText = "sec"; secBtn.style.color = "white"; }
+    if (cscBtn) { cscBtn.innerText = "csc"; cscBtn.style.color = "white"; }
+    if (cotBtn) { cotBtn.innerText = "cot"; cotBtn.style.color = "white"; }
+    if (hypBtn) { hypBtn.innerText = "hyp"; hypBtn.style.color = "white"; }
+    if (e && e.target) { e.target.style.color = "white"; }
   }
-}
-
-// --- Trigonometry Logic ---
-function updateTrigIndicator() {
-  // The dropdown itself shows the indicator, so we don't need extra text.
 }
 
 function appendTrig(func) {
-  let val = eval(display.value || 0);
+  let val = 0;
+  try { val = eval(display.value || 0); } catch { val = 0; }
+  
   let mode = document.getElementById("angle-mode").value;
   let res = 0;
-  let mathRad = 0;
-  
-  // Convert input to Radians for JS Math
-  if (mode === "DEG") mathRad = val * Math.PI / 180;
-  else if (mode === "GRAD") mathRad = val * Math.PI / 200;
-  else mathRad = val; // RAD
   
   if (!isSecondFunc) {
-    if (func === 'sin') res = Math.sin(mathRad);
-    if (func === 'cos') res = Math.cos(mathRad);
-    if (func === 'tan') {
-      // Handle undefined tan at 90 deg, 100 grad
-      if ((mode === "DEG" && Math.abs(val % 180) === 90) || (mode === "GRAD" && Math.abs(val % 200) === 100) || (mode === "RAD" && Math.abs(val % Math.PI) === Math.PI/2)) {
-        display.value = "Invalid Input"; return;
-      }
-      res = Math.tan(mathRad);
-    }
-    if (func === 'sec') res = 1 / Math.cos(mathRad);
-    if (func === 'csc') res = 1 / Math.sin(mathRad);
-    if (func === 'cot') res = 1 / Math.tan(mathRad);
+    // Normal Trig
+    let rad = mode === "DEG" ? val * Math.PI / 180 : (mode === "GRAD" ? val * Math.PI / 200 : val);
+    if (func === 'sin') res = Math.sin(rad);
+    if (func === 'cos') res = Math.cos(rad);
+    if (func === 'tan') res = Math.tan(rad);
+    if (func === 'sec') res = 1 / Math.cos(rad);
+    if (func === 'csc') res = 1 / Math.sin(rad);
+    if (func === 'cot') res = 1 / Math.tan(rad);
+    if (func === 'hyp') { alert("Hyperbolic not supported"); return; }
   } else {
-    // Inverse trig always returns in the current unit
+    // Inverse Trig
     if (func === 'sin') res = Math.asin(val);
     if (func === 'cos') res = Math.acos(val);
     if (func === 'tan') res = Math.atan(val);
+    if (func === 'sec') res = Math.acos(1 / val);
+    if (func === 'csc') res = Math.asin(1 / val);
+    if (func === 'cot') res = Math.atan(1 / val);
+    if (func === 'hyp') { alert("Inverse Hyperbolic not supported"); return; }
     
-    // Convert Radians to desired unit
+    // Convert back to degrees/gradians
     if (mode === "DEG") res = res * 180 / Math.PI;
-    else if (mode === "GRAD") res = res * 200 / Math.PI;
+    if (mode === "GRAD") res = res * 200 / Math.PI;
   }
-  
-  if (isNaN(res) || !Number.isFinite(res)) { display.value = "Invalid Input"; return; }
-  if (Math.abs(res) < 1e-10) res = 0;
-  
-  // Format the equation history exactly like your screenshots
-  let unitSymbol = "";
-  if (mode === "DEG") unitSymbol = "°";
-  else if (mode === "GRAD") unitSymbol = "g";
-  else if (mode === "RAD") unitSymbol = "r";
-
-  let funcDisplay = isSecondFunc ? func + "⁻¹" : func;
-  let eqDisplay = `${funcDisplay}(${val}${unitSymbol})`;
-  document.getElementById("equation-history").innerText = eqDisplay;
-  
-  let finalRes = parseFloat(res.toFixed(10));
-  display.value = finalRes;
-  addToHistory(eqDisplay + " =", finalRes);
-}
-
-function sciFunc(action) {
-  let val = eval(display.value || 0);
-  let res = val;
-  
-  if (action === 'abs') res = Math.abs(val);
-  if (action === 'trunc') res = Math.trunc(val);
-  if (action === 'round') res = Math.round(val);
-  if (action === 'sgn') res = Math.sign(val);
-  if (action === 'floor') res = Math.floor(val);
-  if (action === 'ceil') res = Math.ceil(val);
-  if (action === 'rand') res = Math.random();
-  if (action === 'deg') res = val * 180 / Math.PI;
-  if (action === 'dms') res = val;
-  if (action === 'fact') { 
-    let r = 1; 
-    for(let i=1; i<=val; i++) r*=i; 
-    res = r; 
-  }
-  if (action === 'log') res = Math.log10(val);
-  if (action === 'ln') res = Math.log(val);
-  if (action === 'pow10') res = Math.pow(10, val);
   
   if (!Number.isFinite(res) || isNaN(res)) { display.value = "Invalid Input"; return; }
+  if (Math.abs(res) < 1e-10) res = 0;
+  
   display.value = parseFloat(res.toFixed(10));
 }
 
-// --- Memory Logic ---
+// --- Scientific Funcs ---
+function sciFunc(action) {
+  let val = eval(display.value || 0);
+  let res = val;
+  if (action === 'abs') res = Math.abs(val);
+  if (action === 'floor') res = Math.floor(val);
+  if (action === 'ceil') res = Math.ceil(val);
+  if (action === 'sgn') res = Math.sign(val);
+  if (action === 'trunc') res = Math.trunc(val);
+  if (action === 'round') res = Math.round(val);
+  if (action === 'fact') { let r = 1; for(let i=1; i<=val; i++) r*=i; res = r; }
+  if (action === 'log') res = Math.log10(val);
+  if (action === 'ln') res = Math.log(val);
+  if (action === 'pow10') res = Math.pow(10, val);
+  if (!Number.isFinite(res) || isNaN(res)) { display.value = "Invalid Input"; return; }
+  display.value = parseFloat(res.toFixed(6));
+}
+
+// --- Memory ---
 let memory = 0;
 function memoryClear() { memory = 0; }
 function memoryRecall() { display.value = memory; }
@@ -252,596 +131,159 @@ function memoryAdd() { try { memory += eval(display.value) || 0; } catch {} }
 function memorySubtract() { try { memory -= eval(display.value) || 0; } catch {} }
 function memoryStore() { try { memory = eval(display.value) || 0; } catch {} }
 
-// --- DMS (Degrees, Minutes, Seconds) Logic ---
-function convertDMS() {
-  try {
-    // Strip everything except numbers, minus, and dot
-    let cleanStr = display.value.replace(/[^0-9.-]/g, '');
-    if (!cleanStr) return;
-    
-    let val = parseFloat(cleanStr);
-    let sign = val < 0 ? -1 : 1;
-    val = Math.abs(val);
-    
-    let deg = Math.floor(val);
-    let rem = (val - deg) * 60;
-    let min = Math.floor(rem);
-    let sec = parseFloat(((rem - min) * 60).toFixed(4));
-    
-    display.value = `${sign < 0 ? '-' : ''}${deg}° ${min}′ ${sec}″`;
-  } catch { display.value = "Invalid Input"; }
+// --- Calculus & Stats Placeholders ---
+function convertDMS() { display.value = "DMS"; }
+function convertDeg() { display.value = "Deg"; }
+function calcDerivative() { alert("Derivative"); }
+function calcIntegral() { alert("Integral"); }
+function calcCombPerm() { alert("Combo"); }
+
+// --- Data Entry Keypad ---
+function appendData(val) { document.getElementById("raw-data-input").value += val; }
+function dataBackspace() { 
+  let el = document.getElementById("raw-data-input");
+  el.value = el.value.slice(0, -1); 
 }
-
-function convertDeg() {
-  try {
-    let str = display.value;
-    
-    // If there are no symbols, just return the number
-    if (!str.includes('°') && !str.includes('′') && !str.includes('″')) return;
-
-    let parts = str.split(/[°′″]/);
-    
-    let deg = parseFloat(parts[0]) || 0;
-    let min = parseFloat(parts[1]) || 0;
-    let sec = parseFloat(parts[2]) || 0;
-    
-    let isNeg = deg < 0 || str.includes("-");
-    deg = Math.abs(deg);
-    
-    let decimal = deg + (min / 60) + (sec / 3600);
-    if (isNeg) decimal = -decimal;
-    
-    display.value = parseFloat(decimal.toFixed(8));
-  } catch { display.value = "Invalid Input"; }
+function loadRawData() {
+  let input = document.getElementById("raw-data-input").value;
+  let newData = input.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v)); 
+  if (newData.length > 0) { 
+    dataList = newData; 
+    updateDataPreview(); 
+    display.value = dataList.length + " items loaded"; 
+    document.getElementById("raw-data-input").value = "";
+  } else { display.value = "Invalid Data"; }
 }
-
-// --- AI Chat Logic ---
-async function askAI() {
-  const q = document.getElementById("aiQuestion").value.trim();
-  const a = document.getElementById("aiAnswer");
-  const clearBtn = document.getElementById("clearBtn");
-  if (!q) return;
-  a.textContent = "Thinking...";
-  clearBtn.style.display = "none";
-
-  try {
-    const res = await fetch("https://project1-bice-alpha.vercel.app/ask", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q })
-    });
-    const data = await res.json();
-    a.textContent = data.answer || data.error || "No answer";
-    clearBtn.style.display = "block";
-  } catch { a.textContent = "Could not reach server."; clearBtn.style.display = "block"; }
+function updateDataPreview() { 
+  let el = document.getElementById("data-preview");
+  if(el) el.innerText = "Data: [" + dataList.join(", ") + "]"; 
 }
-
-function clearAI() { 
-  document.getElementById("aiQuestion").value = ""; 
-  document.getElementById("aiAnswer").textContent = ""; 
-  document.getElementById("clearBtn").style.display = "none";
-}
-
-// Keyboard support
-document.addEventListener("keydown", (e) => {
-  if (e.target.id === "aiQuestion") {
-    if (e.key === "Enter") { e.preventDefault(); askAI(); }
-    return; 
-  }
-  const key = e.key;
-  const allowed = "0123456789.+-*/%()";
-  if (key.length === 1 && allowed.includes(key)) { e.preventDefault(); append(key); return; }
-  if (key === "Enter" || key === "=") { e.preventDefault(); calculate(); } 
-  else if (key === "Backspace") { e.preventDefault(); backspace(); } 
-  else if (key === "Escape" || key === "Delete") { e.preventDefault(); clearEntry(); }
-});
-
-
-
-
-
-
-
-
-
-
-// --- Guide Panel Logic ---
-function toggleGuide() {
-  document.getElementById("guidePanel").classList.toggle("open");
-}
-
-// --- Calculus Logic ---
-let currentCalcMode = "";
-
-function calcSum() {
-  let str = display.value;
-  if (!str.includes(',')) {
-    display.value = eval(str); 
-    return;
-  }
-  try {
-    let nums = str.split(',').map(n => parseFloat(n.trim()));
-    let sum = nums.reduce((a, b) => a + b, 0);
-    document.getElementById("equation-history").innerText = `Sum(${str})`;
-    display.value = sum;
-    addToHistory(`Sum(${str}) =`, sum);
-  } catch { display.value = "Invalid Input"; }
-}
-
-function calcDerivative() {
-  showCalcInput("derivative");
-}
-
-function calcIntegral() {
-  showCalcInput("integral");
-}
-
-function showCalcInput(mode) {
-  currentCalcMode = mode;
-  const box = document.getElementById("calc-input-box");
-  box.style.display = "block";
-  document.getElementById("calc-equation").value = "x^2"; // Default
-  document.getElementById("calc-point").value = display.value || "1";
-  document.getElementById("calc-equation").focus();
-}
-
-function executeCalculus() {
-  const eqStr = document.getElementById("calc-equation").value;
-  const xVal = parseFloat(document.getElementById("calc-point").value) || 0;
-  
-  // Create a safe function evaluator for the equation
-  // Note: Replace ^ with ** for JS, and handle implicit multiplication like 2x -> 2*x
-  let safeEq = eqStr.replace(/\^/g, '**').replace(/([0-9])([a-zA-Z])/g, '$1*$2').replace(/([a-zA-Z])([0-9])/g, '$1*$2');
-  let f;
-  try {
-    f = new Function('x', `return ${safeEq};`);
-    if (isNaN(f(xVal))) throw new Error("Invalid");
-  } catch {
-    display.value = "Invalid Equation";
-    return;
-  }
-
-  if (currentCalcMode === "derivative") {
-    let h = 0.00001;
-    let deriv = (f(xVal + h) - f(xVal - h)) / (2 * h);
-    let finalRes = parseFloat(deriv.toFixed(6));
-    
-    document.getElementById("equation-history").innerText = `d/dx (${eqStr}) at x=${xVal}`;
-    display.value = finalRes;
-    addToHistory(`d/dx (${eqStr}) at ${xVal} =`, finalRes);
-  } 
-  else if (currentCalcMode === "integral") {
-    let a = 0; // Lower bound is 0 by default
-    let b = xVal; // Upper bound is the point
-    let n = 1000;
-    let h = (b - a) / n;
-    
-    let sum = 0.5 * (f(a) + f(b));
-    for (let i = 1; i < n; i++) {
-      sum += f(a + i * h);
-    }
-    let integral = sum * h;
-    let finalRes = parseFloat(integral.toFixed(6));
-    
-    document.getElementById("equation-history").innerText = `∫ (${eqStr}) dx from 0 to ${b}`;
-    display.value = finalRes;
-    addToHistory(`∫ (${eqStr}) from 0 to ${b} =`, finalRes);
-  }
-  
-  // Hide the input box after solving
-  document.getElementById("calc-input-box").style.display = "none";
-}
-
-
-// --- Statistics Logic ---
-let dataList = [];
-
-function updateDataPreview() {
-  const preview = document.getElementById("data-preview");
-  if (preview) preview.innerText = "Data: [" + dataList.join(", ") + "]";
-}
-
-function addDataPoint() {
-  let val = parseFloat(display.value);
-  if (!isNaN(val)) {
-    dataList.push(val);
-    display.value = ""; 
-    updateDataPreview();
-  }
-}
-
-function clearDataList() {
-  dataList = [];
-  display.value = "";
-  updateDataPreview();
+function clearDataList() { 
+  dataList = []; 
+  updateDataPreview(); 
+  display.value = ""; 
+  document.getElementById("raw-data-input").value = "";
 }
 
 function calcStat(type) {
-  if (dataList.length === 0) {
-    display.value = "No Data";
-    return;
-  }
-  
-  let res = 0;
-  let n = dataList.length;
-  let sorted = [...dataList].sort((a, b) => a - b);
-  
-  // 1. Count (n)
-  if (type === 'count') res = n;
-  
-  // 2. Mean (x̄)
-  if (type === 'mean') {
-    let sum = dataList.reduce((a, b) => a + b, 0);
-    res = sum / n;
-  }
-  
-  // 3. Median (Med)
-  if (type === 'median') {
-    let mid = Math.floor(n / 2);
-    res = n % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
-  }
-  
-      // 4. Mode (Unimodal, Bimodal, Trimodal, etc.)
+  if (dataList.length === 0) { display.value = "No Data"; return; }
+  let n = dataList.length, sum = dataList.reduce((a, b) => a + b, 0), mean = sum / n, res = 0;
+  if (type === 'sum') res = sum;
+  if (type === 'mean') res = mean;
+  if (type === 'sd') res = Math.sqrt(dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n);
   if (type === 'mode') {
-    let counts = {};
-    let maxCount = 0;
-    
-    dataList.forEach(val => {
-      let key = val.toString();
-      if (!counts[key]) {
-        counts[key] = { count: 0, value: val };
-      }
-      counts[key].count++;
-      if (counts[key].count > maxCount) {
-        maxCount = counts[key].count;
-      }
-    });
-    
-    if (maxCount === 1) {
-      res = "No Mode (Uniform)";
-    } else {
-      let modes = Object.values(counts)
-                        .filter(item => item.count === maxCount)
-                        .map(item => item.value);
-      
-      modes.sort((a, b) => a - b);
-      let numModes = modes.length;
-      
-      let typeStr = "";
-      if (numModes === 1) typeStr = "Unimodal";
-      else if (numModes === 2) typeStr = "Bimodal";
-      else if (numModes === 3) typeStr = "Trimodal";
-      else if (numModes === 4) typeStr = "Quadrimodal";
-      else typeStr = "Multimodal";
-      
-      res = `${typeStr}: ${modes.join(", ")}`;
+    let counts = {}; let maxCount = 0;
+    dataList.forEach(val => { let key = val.toString(); if (!counts[key]) counts[key] = { count: 0, value: val }; counts[key].count++; if (counts[key].count > maxCount) maxCount = counts[key].count; });
+    if (maxCount === 1) res = "No Mode";
+    else {
+      let modes = Object.values(counts).filter(item => item.count === maxCount).map(item => item.value);
+      res = "Mode: " + modes.join(", ");
     }
   }
-  
-  // 5. Variance (s²)
-  if (type === 'var') {
-    let mean = dataList.reduce((a, b) => a + b, 0) / n;
-    let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n; // Population variance
-    res = variance;
-  }
-  
-  // 6. Standard Deviation (σ)
-  if (type === 'sd') {
-    let mean = dataList.reduce((a, b) => a + b, 0) / n;
-    let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
-    res = Math.sqrt(variance);
-  }
-  
-  // 7. Sum (Calculates the sum of the data list)
-  if (type === 'sum') {
-    res = dataList.reduce((a, b) => a + b, 0);
-  }
-  
-  if (typeof res === 'number' && !isNaN(res)) {
-    res = parseFloat(res.toFixed(6));
-}
-  
-  document.getElementById("equation-history").innerText = `Stat: ${type} (n=${n})`;
+  if (typeof res === 'number') res = parseFloat(res.toFixed(4));
   display.value = res;
-  addToHistory(`Stat (${type}) =`, res);
 }
-
-function calcCombPerm(mode) {
-  currentComboMode = mode;
-  document.getElementById("combo-input-box").style.display = "block";
-  document.getElementById("combo-n").value = "";
-  document.getElementById("combo-r").value = "";
-  document.getElementById("combo-n").focus();
-}
-
-function factorial(num) {
-  if (num < 0) return 0;
-  let r = 1;
-  for (let i = 1; i <= num; i++) r *= i;
-  return r;
-}
-
-function executeCombPerm() {
-  let n = parseInt(document.getElementById("combo-n").value);
-  let r = parseInt(document.getElementById("combo-r").value);
-  
-  if (isNaN(n) || isNaN(r) || n < 0 || r < 0 || r > n) {
-    display.value = "Invalid Input";
-    document.getElementById("combo-input-box").style.display = "none";
-    return;
-  }
-  
-  let res = 0;
-  if (currentComboMode === 'nCr') {
-    res = factorial(n) / (factorial(r) * factorial(n - r));
-  } else if (currentComboMode === 'nPr') {
-    res = factorial(n) / factorial(n - r);
-  }
-  
-  document.getElementById("equation-history").innerText = `${currentComboMode}(${n}, ${r})`;
-  display.value = res;
-  addToHistory(`${currentComboMode}(${n}, ${r}) =`, res);
-  
-  document.getElementById("combo-input-box").style.display = "none";
-}
-
-
-
-
-
-// --- Raw Data Input Logic ---
-function previewRawData(val) {
-  let preview = document.getElementById("raw-data-preview");
-  if (!val) { preview.innerText = ""; return; }
-  
-  let nums = val.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
-  preview.innerText = `Detected ${nums.length} numbers: [${nums.join(", ")}]`;
-}
-
-function loadRawData() {
-  let input = document.getElementById("raw-data-input").value;
-  
-  // Explicitly split by comma
-  let newData = input.split(',')
-                     .map(val => parseFloat(val.trim()))
-                     .filter(val => !isNaN(val)); 
-                     
-  if (newData.length > 0) {
-    dataList = newData; 
-    updateDataPreview();
-    
-    document.getElementById("equation-history").innerText = "Data Loaded Successfully";
-    display.value = newData.length + " items";
-    
-    document.getElementById("data-input-box").style.display = "none";
-    document.getElementById("panel-data").classList.add("active"); 
-    
-    // Clear the input for next time
-    document.getElementById("raw-data-input").value = "";
-    document.getElementById("raw-data-preview").innerText = "";
-  } else {
-    display.value = "Invalid Data";
-  }
-}
-
-// Override the showPanel function to handle the data tab specially
-const originalShowPanel = showPanel;
-showPanel = function(p) {
-  originalShowPanel(p);
-  if (p === 'data') {
-    document.getElementById("data-input-box").style.display = "block";
-    document.getElementById("raw-data-input").focus(); 
-  } else {
-    document.getElementById("data-input-box").style.display = "none";
-  }
-}
-
-// --- Data Input Logic ---
-function appendData(val) {
-  let input = document.getElementById("raw-data-input");
-  input.value += val;
-  previewRawData(input.value);
-}
-
-function previewRawData(val) {
-  let preview = document.getElementById("raw-data-preview");
-  if (!val) { preview.innerText = ""; return; }
-  
-  let nums = val.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
-  preview.innerText = `Detected ${nums.length} numbers: [${nums.join(", ")}]`;
-}
-
-function loadRawData() {
-  let input = document.getElementById("raw-data-input").value;
-  
-  let newData = input.split(',')
-                     .map(val => parseFloat(val.trim()))
-                     .filter(val => !isNaN(val)); 
-                     
-  if (newData.length > 0) {
-    dataList = newData; 
-    updateDataPreview();
-    
-    document.getElementById("equation-history").innerText = "Data Loaded Successfully";
-    display.value = newData.length + " items";
-    
-    document.getElementById("data-input-box").style.display = "none";
-    document.getElementById("panel-data").classList.add("active"); 
-    
-    document.getElementById("raw-data-input").value = "";
-    document.getElementById("raw-data-preview").innerText = "";
-  } else {
-    display.value = "Invalid Data";
-  }
-}
-
-// 2. Intercept the standard append function
-const originalAppendData = append;
-append = function(val) {
-  let dataInputBox = document.getElementById("data-input-box");
-  
-  // If the Data tab is open and visible, type into the Data box instead of the calculator!
-  if (dataInputBox && dataInputBox.style.display === "block") {
-    appendData(val);
-    return;
-  }
-  
-  // Otherwise, do standard calculator behavior
-  originalAppendData(val);
-}
-
-// 3. Show/hide Data panel correctly
-const originalShowPanelData = showPanel;
-showPanel = function(p) {
-  originalShowPanelData(p);
-  if (p === 'data') {
-    document.getElementById("data-input-box").style.display = "block";
-    // Clear the text input when opening
-    document.getElementById("raw-data-input").value = "";
-    document.getElementById("raw-data-preview").innerText = "";
-  } else {
-    document.getElementById("data-input-box").style.display = "none";
-  }
-}
-
-
-
-
-
-// --- Calculate All Statistics at Once ---
 function calcAllStats() {
-  if (dataList.length === 0) {
-    display.value = "No Data";
+  if (dataList.length === 0) { display.value = "No Data"; return; }
+  let n = dataList.length, sum = dataList.reduce((a, b) => a + b, 0), mean = sum / n;
+  let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+  display.value = `n=${n}; sum=${sum}; mean=${mean.toFixed(2)}; sd=${Math.sqrt(variance).toFixed(2)}`;
+  display.style.fontSize = "14px";
+}
+
+// --- Logic Keypad ---
+function changeLogicBase() {
+  let newBase = parseInt(document.getElementById("logic-base").value);
+  let input = document.getElementById("logic-input");
+  
+  // Convert current input if it exists
+  if (input.value !== "") {
+    try {
+      if (!input.value.includes(" ")) {
+        let decimalVal = parseInt(input.value, currentBase);
+        if (!isNaN(decimalVal)) input.value = decimalVal.toString(newBase).toUpperCase();
+      }
+    } catch { input.value = ""; }
+  }
+  currentBase = newBase;
+
+  // --- NEW: Enable/Disable Buttons based on Base ---
+  for (let i = 0; i <= 15; i++) {
+    let hexChar = i.toString(16).toUpperCase();
+    let btn = document.getElementById("btn-logic-" + hexChar);
+    if (btn) {
+      if (i >= currentBase) {
+        btn.disabled = true;
+        btn.style.opacity = "0.3"; // Make it look grayed out
+      } else {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+      }
+    }
+  }
+}
+function logicAppend(char) {
+  let input = document.getElementById("logic-input");
+  let num = parseInt(char, 16); 
+  if (num >= currentBase) return; 
+  input.value += char;
+}
+function logicClear() { document.getElementById("logic-input").value = ""; }
+function logicBackspace() { document.getElementById("logic-input").value = document.getElementById("logic-input").value.slice(0, -1); }
+function logicOp(op) {
+  let input = document.getElementById("logic-input");
+  if (input.value === "") return;
+  if (input.value.includes(" AND ") || input.value.includes(" OR ") || input.value.includes(" XOR ")) return;
+  input.value += ` ${op} `;
+}
+function logicCalculate() {
+  let input = document.getElementById("logic-input").value;
+  if (!input) return;
+  
+  if (input.startsWith("NOT ")) {
+    let val = parseInt(input.replace("NOT ", ""), currentBase);
+    document.getElementById("logic-input").value = (~val).toString(currentBase).toUpperCase();
     return;
   }
+
+  let parts, res;
+  let val1, val2;
   
-  let n = dataList.length;
-  let sorted = [...dataList].sort((a, b) => a - b);
-  
-  // 1. Sum & Mean
-  let sum = dataList.reduce((a, b) => a + b, 0);
-  let mean = sum / n;
-  
-  // 2. Median
-  let mid = Math.floor(n / 2);
-  let median = n % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
-  
-  // 3. Mode
-  let counts = {};
-  let maxCount = 0;
-  dataList.forEach(val => {
-    let key = val.toString();
-    if (!counts[key]) counts[key] = { count: 0, value: val };
-    counts[key].count++;
-    if (counts[key].count > maxCount) maxCount = counts[key].count;
-  });
-  
-  let modeStr = "None";
-  if (maxCount > 1) {
-    let modes = Object.values(counts).filter(item => item.count === maxCount).map(item => item.value);
-    modes.sort((a, b) => a - b);
-    let numModes = modes.length;
-    let typeStr = numModes === 1 ? "Unimodal" : numModes === 2 ? "Bimodal" : numModes === 3 ? "Trimodal" : "Multimodal";
-    modeStr = `${typeStr}: ${modes.join(", ")}`;
+  if (input.includes(" AND ")) { parts = input.split(" AND "); val1 = parseInt(parts[0].trim(), currentBase); val2 = parseInt(parts[1].trim(), currentBase); res = val1 & val2; }
+  else if (input.includes(" OR ")) { parts = input.split(" OR "); val1 = parseInt(parts[0].trim(), currentBase); val2 = parseInt(parts[1].trim(), currentBase); res = val1 | val2; }
+  else if (input.includes(" XOR ")) { parts = input.split(" XOR "); val1 = parseInt(parts[0].trim(), currentBase); val2 = parseInt(parts[1].trim(), currentBase); res = val1 ^ val2; }
+  else if (input.includes(" NAND ")) { parts = input.split(" NAND "); val1 = parseInt(parts[0].trim(), currentBase); val2 = parseInt(parts[1].trim(), currentBase); res = ~(val1 & val2); }
+  else if (input.includes(" NOR ")) { parts = input.split(" NOR "); val1 = parseInt(parts[0].trim(), currentBase); val2 = parseInt(parts[1].trim(), currentBase); res = ~(val1 | val2); }
+  else if (input.includes(" XNOR ")) { parts = input.split(" XNOR "); val1 = parseInt(parts[0].trim(), currentBase); val2 = parseInt(parts[1].trim(), currentBase); res = ~(val1 ^ val2); }
+  else return;
+
+  if (parts.length === 2) {
+    // Note: JS bitwise NOT (~) returns a signed 32-bit integer, 
+    // so we use >>> 0 to convert it to an unsigned integer before displaying.
+    let displayRes = res >>> 0;
+    document.getElementById("logic-input").value = displayRes.toString(currentBase).toUpperCase();
   }
-  
-  // 4. Variance & Standard Deviation
-  let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
-  let sd = Math.sqrt(variance);
-  
-  // Format results with semicolons
-  let output = `n=${n}; sum=${parseFloat(sum.toFixed(4))}; mean=${parseFloat(mean.toFixed(4))}; med=${parseFloat(median.toFixed(4))}; mode=${modeStr}; var=${parseFloat(variance.toFixed(4))}; sd=${parseFloat(sd.toFixed(4))}`;
-  
-  // Display in history and main screen
-  document.getElementById("equation-history").innerText = "Summary";
-  display.value = output;
-  
-  // Make the display text smaller so it fits on the screen
-  display.style.fontSize = "14px";
-  display.style.whiteSpace = "normal";
-  display.style.lineHeight = "1.4";
-  
-  addToHistory("Summary Computed", `n=${n}`);
 }
 
-// Override clearDisplay to reset the font size when cleared
-const oldClearDisplayStats = clearDisplay;
-clearDisplay = function() {
-  oldClearDisplayStats();
-  display.style.fontSize = "32px";
-  display.style.whiteSpace = "normal";
+// --- History & AI ---
+function toggleHistory() { document.getElementById("historyPanel").classList.toggle("open"); }
+function addToHistory(eq, res) {
+  historyData.unshift({eq, res});
+  document.getElementById("historyList").innerHTML = historyData.map(i => `<li>${i.eq} <br><span style="color:#4af626">${i.res}</span></li>`).join('');
 }
+function clearHistory() { historyData = []; document.getElementById("historyList").innerHTML = ""; }
 
-// Override clearDisplay to reset the font size when cleared
-const oldClearDisplayStats = clearDisplay;
-clearDisplay = function() {
-  oldClearDisplayStats();
-  display.style.fontSize = "32px";
-  display.style.whiteSpace = "normal";
+async function askAI() {
+  let q = document.getElementById("aiQuestion").value;
+  if(!q) return;
+  document.getElementById("aiAnswer").innerText = "Thinking...";
+  try {
+    let res = await fetch("https://project1-bice-alpha.vercel.app/ask", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({question: q}) });
+    let data = await res.json();
+    document.getElementById("aiAnswer").innerText = data.answer;
+    document.getElementById("clearBtn").style.display = "block";
+  } catch { document.getElementById("aiAnswer").innerText = "Error"; }
 }
+function clearAI() { document.getElementById("aiQuestion").value = ""; document.getElementById("aiAnswer").innerText = ""; document.getElementById("clearBtn").style.display = "none"; }
 
-
-
-
-// --- Calculate All Statistics at Once ---
-function calcAllStats() {
-  if (dataList.length === 0) {
-    display.value = "No Data";
-    return;
-  }
-  
-  let n = dataList.length;
-  let sorted = [...dataList].sort((a, b) => a - b);
-  
-  // 1. Sum & Mean
-  let sum = dataList.reduce((a, b) => a + b, 0);
-  let mean = sum / n;
-  
-  // 2. Median
-  let mid = Math.floor(n / 2);
-  let median = n % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
-  
-  // 3. Mode
-  let counts = {};
-  let maxCount = 0;
-  dataList.forEach(val => {
-    let key = val.toString();
-    if (!counts[key]) counts[key] = { count: 0, value: val };
-    counts[key].count++;
-    if (counts[key].count > maxCount) maxCount = counts[key].count;
-  });
-  
-  let modeStr = "No Mode";
-  if (maxCount > 1) {
-    let modes = Object.values(counts).filter(item => item.count === maxCount).map(item => item.value);
-    modes.sort((a, b) => a - b);
-    let numModes = modes.length;
-    let typeStr = numModes === 1 ? "Unimodal" : numModes === 2 ? "Bimodal" : numModes === 3 ? "Trimodal" : "Multimodal";
-    modeStr = `${typeStr}: ${modes.join(", ")}`;
-  }
-  
-  // 4. Variance & Standard Deviation
-  let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
-  let sd = Math.sqrt(variance);
-  
-  // Format results
-  let output = `n = ${n}\nΣx = ${parseFloat(sum.toFixed(4))}\nMean = ${parseFloat(mean.toFixed(4))}\nMed = ${parseFloat(median.toFixed(4))}\nMode = ${modeStr}\nVar = ${parseFloat(variance.toFixed(4))}\nσ = ${parseFloat(sd.toFixed(4))}`;
-  
-  // Display in history and main screen
-  document.getElementById("equation-history").innerText = "All Statistics";
-  display.value = output;
-  
-  // Make the display text smaller so it fits
-  display.style.fontSize = "14px";
-  display.style.whiteSpace = "pre-wrap";
-  display.style.lineHeight = "1.4";
-  
-  addToHistory("All Stats Computed", `n=${n}`);
-}
-
-// Override clearDisplay to reset the font size when cleared
-const oldClearDisplayStats = clearDisplay;
-clearDisplay = function() {
-  oldClearDisplayStats();
-  display.style.fontSize = "32px";
-  display.style.whiteSpace = "normal";
-}
 
