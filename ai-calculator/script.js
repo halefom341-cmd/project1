@@ -116,7 +116,17 @@ function calculate() {
 // Panels (Trig, Func)
 function showPanel(p) { 
   document.querySelectorAll(".sci-panel").forEach(el => el.classList.remove("active")); 
-  document.getElementById(`panel-${p}`).classList.add("active"); 
+  
+  let panel = document.getElementById(`panel-${p}`);
+  if (panel) panel.classList.add("active");
+  
+  document.getElementById("data-input-box").style.display = "none";
+  document.getElementById("calc-input-box").style.display = "none";
+  document.getElementById("combo-input-box").style.display = "none";
+
+  if (p === 'data') {
+    document.getElementById("data-input-box").style.display = "block";
+  }
 }
 
 // --- 2nd Function Toggle ---
@@ -423,7 +433,6 @@ function executeCalculus() {
 
 // --- Statistics Logic ---
 let dataList = [];
-let currentComboMode = "";
 
 function updateDataPreview() {
   const preview = document.getElementById("data-preview");
@@ -434,7 +443,7 @@ function addDataPoint() {
   let val = parseFloat(display.value);
   if (!isNaN(val)) {
     dataList.push(val);
-    display.value = ""; // Clear screen for next input
+    display.value = ""; 
     updateDataPreview();
   }
 }
@@ -453,46 +462,88 @@ function calcStat(type) {
   
   let res = 0;
   let n = dataList.length;
+  let sorted = [...dataList].sort((a, b) => a - b);
   
+  // 1. Count (n)
   if (type === 'count') res = n;
   
+  // 2. Mean (x̄)
   if (type === 'mean') {
     let sum = dataList.reduce((a, b) => a + b, 0);
     res = sum / n;
   }
   
+  // 3. Median (Med)
   if (type === 'median') {
-    let sorted = [...dataList].sort((a, b) => a - b);
     let mid = Math.floor(n / 2);
     res = n % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
   }
   
+      // 4. Mode (Unimodal, Bimodal, Trimodal, etc.)
   if (type === 'mode') {
     let counts = {};
     let maxCount = 0;
+    
     dataList.forEach(val => {
-      counts[val] = (counts[val] || 0) + 1;
-      if (counts[val] > maxCount) maxCount = counts[val];
+      let key = val.toString();
+      if (!counts[key]) {
+        counts[key] = { count: 0, value: val };
+      }
+      counts[key].count++;
+      if (counts[key].count > maxCount) {
+        maxCount = counts[key].count;
+      }
     });
-    let modes = Object.keys(counts).filter(val => counts[val] === maxCount);
-    res = modes.length === dataList.length ? "No Mode" : modes.join(", ");
+    
+    if (maxCount === 1) {
+      res = "No Mode (Uniform)";
+    } else {
+      let modes = Object.values(counts)
+                        .filter(item => item.count === maxCount)
+                        .map(item => item.value);
+      
+      modes.sort((a, b) => a - b);
+      let numModes = modes.length;
+      
+      let typeStr = "";
+      if (numModes === 1) typeStr = "Unimodal";
+      else if (numModes === 2) typeStr = "Bimodal";
+      else if (numModes === 3) typeStr = "Trimodal";
+      else if (numModes === 4) typeStr = "Quadrimodal";
+      else typeStr = "Multimodal";
+      
+      res = `${typeStr}: ${modes.join(", ")}`;
+    }
   }
   
-  if (type === 'sd' || type === 'var') {
+  // 5. Variance (s²)
+  if (type === 'var') {
     let mean = dataList.reduce((a, b) => a + b, 0) / n;
     let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n; // Population variance
-    if (type === 'var') res = variance;
-    if (type === 'sd') res = Math.sqrt(variance);
+    res = variance;
   }
   
-  if (typeof res === 'number') res = parseFloat(res.toFixed(6));
+  // 6. Standard Deviation (σ)
+  if (type === 'sd') {
+    let mean = dataList.reduce((a, b) => a + b, 0) / n;
+    let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+    res = Math.sqrt(variance);
+  }
   
-  document.getElementById("equation-history").innerText = `Stat: ${type}`;
+  // 7. Sum (Calculates the sum of the data list)
+  if (type === 'sum') {
+    res = dataList.reduce((a, b) => a + b, 0);
+  }
+  
+  if (typeof res === 'number' && !isNaN(res)) {
+    res = parseFloat(res.toFixed(6));
+}
+  
+  document.getElementById("equation-history").innerText = `Stat: ${type} (n=${n})`;
   display.value = res;
   addToHistory(`Stat (${type}) =`, res);
 }
 
-// --- Combinatorics Logic ---
 function calcCombPerm(mode) {
   currentComboMode = mode;
   document.getElementById("combo-input-box").style.display = "block";
@@ -650,3 +701,147 @@ showPanel = function(p) {
     document.getElementById("data-input-box").style.display = "none";
   }
 }
+
+
+
+
+
+// --- Calculate All Statistics at Once ---
+function calcAllStats() {
+  if (dataList.length === 0) {
+    display.value = "No Data";
+    return;
+  }
+  
+  let n = dataList.length;
+  let sorted = [...dataList].sort((a, b) => a - b);
+  
+  // 1. Sum & Mean
+  let sum = dataList.reduce((a, b) => a + b, 0);
+  let mean = sum / n;
+  
+  // 2. Median
+  let mid = Math.floor(n / 2);
+  let median = n % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
+  
+  // 3. Mode
+  let counts = {};
+  let maxCount = 0;
+  dataList.forEach(val => {
+    let key = val.toString();
+    if (!counts[key]) counts[key] = { count: 0, value: val };
+    counts[key].count++;
+    if (counts[key].count > maxCount) maxCount = counts[key].count;
+  });
+  
+  let modeStr = "None";
+  if (maxCount > 1) {
+    let modes = Object.values(counts).filter(item => item.count === maxCount).map(item => item.value);
+    modes.sort((a, b) => a - b);
+    let numModes = modes.length;
+    let typeStr = numModes === 1 ? "Unimodal" : numModes === 2 ? "Bimodal" : numModes === 3 ? "Trimodal" : "Multimodal";
+    modeStr = `${typeStr}: ${modes.join(", ")}`;
+  }
+  
+  // 4. Variance & Standard Deviation
+  let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+  let sd = Math.sqrt(variance);
+  
+  // Format results with semicolons
+  let output = `n=${n}; sum=${parseFloat(sum.toFixed(4))}; mean=${parseFloat(mean.toFixed(4))}; med=${parseFloat(median.toFixed(4))}; mode=${modeStr}; var=${parseFloat(variance.toFixed(4))}; sd=${parseFloat(sd.toFixed(4))}`;
+  
+  // Display in history and main screen
+  document.getElementById("equation-history").innerText = "Summary";
+  display.value = output;
+  
+  // Make the display text smaller so it fits on the screen
+  display.style.fontSize = "14px";
+  display.style.whiteSpace = "normal";
+  display.style.lineHeight = "1.4";
+  
+  addToHistory("Summary Computed", `n=${n}`);
+}
+
+// Override clearDisplay to reset the font size when cleared
+const oldClearDisplayStats = clearDisplay;
+clearDisplay = function() {
+  oldClearDisplayStats();
+  display.style.fontSize = "32px";
+  display.style.whiteSpace = "normal";
+}
+
+// Override clearDisplay to reset the font size when cleared
+const oldClearDisplayStats = clearDisplay;
+clearDisplay = function() {
+  oldClearDisplayStats();
+  display.style.fontSize = "32px";
+  display.style.whiteSpace = "normal";
+}
+
+
+
+
+// --- Calculate All Statistics at Once ---
+function calcAllStats() {
+  if (dataList.length === 0) {
+    display.value = "No Data";
+    return;
+  }
+  
+  let n = dataList.length;
+  let sorted = [...dataList].sort((a, b) => a - b);
+  
+  // 1. Sum & Mean
+  let sum = dataList.reduce((a, b) => a + b, 0);
+  let mean = sum / n;
+  
+  // 2. Median
+  let mid = Math.floor(n / 2);
+  let median = n % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
+  
+  // 3. Mode
+  let counts = {};
+  let maxCount = 0;
+  dataList.forEach(val => {
+    let key = val.toString();
+    if (!counts[key]) counts[key] = { count: 0, value: val };
+    counts[key].count++;
+    if (counts[key].count > maxCount) maxCount = counts[key].count;
+  });
+  
+  let modeStr = "No Mode";
+  if (maxCount > 1) {
+    let modes = Object.values(counts).filter(item => item.count === maxCount).map(item => item.value);
+    modes.sort((a, b) => a - b);
+    let numModes = modes.length;
+    let typeStr = numModes === 1 ? "Unimodal" : numModes === 2 ? "Bimodal" : numModes === 3 ? "Trimodal" : "Multimodal";
+    modeStr = `${typeStr}: ${modes.join(", ")}`;
+  }
+  
+  // 4. Variance & Standard Deviation
+  let variance = dataList.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+  let sd = Math.sqrt(variance);
+  
+  // Format results
+  let output = `n = ${n}\nΣx = ${parseFloat(sum.toFixed(4))}\nMean = ${parseFloat(mean.toFixed(4))}\nMed = ${parseFloat(median.toFixed(4))}\nMode = ${modeStr}\nVar = ${parseFloat(variance.toFixed(4))}\nσ = ${parseFloat(sd.toFixed(4))}`;
+  
+  // Display in history and main screen
+  document.getElementById("equation-history").innerText = "All Statistics";
+  display.value = output;
+  
+  // Make the display text smaller so it fits
+  display.style.fontSize = "14px";
+  display.style.whiteSpace = "pre-wrap";
+  display.style.lineHeight = "1.4";
+  
+  addToHistory("All Stats Computed", `n=${n}`);
+}
+
+// Override clearDisplay to reset the font size when cleared
+const oldClearDisplayStats = clearDisplay;
+clearDisplay = function() {
+  oldClearDisplayStats();
+  display.style.fontSize = "32px";
+  display.style.whiteSpace = "normal";
+}
+
