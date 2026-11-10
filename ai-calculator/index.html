@@ -108,22 +108,31 @@
     <!-- Function Panel -->
     <div id="panel-func" class="sci-panel" style="overflow-y: auto;">
       
-      <!-- ROW 1: Basic Math & Integer Functions -->
+      <!-- ROW 1: Variables & Powers -->
+      <div class="sci-row">
+        <button onclick="append('x')" style="color:#4af626; font-weight:bold;">x</button>
+        <button onclick="append('y')" style="color:#4af626; font-weight:bold;">y</button>
+        <button onclick="append('=')" style="color:#4af626; font-weight:bold;">=</button>
+        <button onclick="append('x^')" style="color:#4af626;">xⁿ</button>
+        <button onclick="append('y^')" style="color:#4af626;">yⁿ</button>
+      </div>
+
+      <!-- ROW 2: Basic Math & Logs -->
       <div class="sci-row">
         <button onclick="sciFunc('floor')">⌊x⌋</button>
         <button onclick="sciFunc('ceil')">⌈x⌉</button>
         <button onclick="sciFunc('sgn')">sgn(x)</button>
-        <button onclick="sciFunc('round')">round</button>
-        <button onclick="sciFunc('trunc')">trunc</button>
+        <button onclick="sciFunc('log')">log</button>
+        <button onclick="sciFunc('ln')">ln</button>
       </div>
 
-      <!-- ROW 2: Calculus -->
+      <!-- ROW 3: Calculus -->
       <div class="sci-row">
         <button onclick="calcDerivative()" class="btn-green">f'(x)</button>
         <button onclick="calcIntegral()" class="btn-green">∫</button>
-        <button onclick="convertDMS()">→dms</button>
-        <button onclick="convertDeg()">→deg</button>
-        <button onclick="append('x')" style="color:#4af626">x</button>
+        <button onclick="calcStat('sum')" style="color:#4af626">Σ</button>
+        <button onclick="calcStat('mean')" class="btn-purple">x̄</button>
+        <button onclick="calcStat('median')" class="btn-purple">Med</button>
       </div>
 
       <!-- ROW 3: Statistics (Ordered) -->
@@ -231,6 +240,20 @@
 
     <!-- ================= END PANELS ================= -->
 
+    <!-- Calculus Input Box -->
+    <div id="calc-input-box" style="display: none; padding: 10px; background: #1a1a21; border-top: 1px solid #3d3d4a; border-bottom: 1px solid #3d3d4a;">
+      <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+        <span style="color: #4af626; font-weight: bold; font-family: monospace;">Equation:</span>
+        <input type="text" id="calc-equation" readonly style="flex: 1; padding: 8px; background: #2b2b36; color: #4af626; border: 1px solid #4af626; border-radius: 4px; font-family: monospace;">
+      </div>
+      <div style="display: flex; align-items: center; gap: 5px;">
+        <span style="color: #aaa; font-family: monospace;">Evaluate at x =</span>
+        <input type="number" id="calc-point" value="1" style="width: 60px; padding: 8px; background: #2b2b36; color: white; border: 1px solid #3d3d4a; border-radius: 4px; font-family: monospace;">
+        <button onclick="executeCalculus()" style="flex: 1; padding: 8px; background: #4af626; color: black; font-weight: bold; border: none; border-radius: 4px; cursor: pointer;">Solve</button>
+        <button onclick="document.getElementById('calc-input-box').style.display='none'" style="padding: 8px; background: #ff3b30; color: white; border: none; border-radius: 4px; cursor: pointer;">✕</button>
+      </div>
+    </div>
+
     <!-- Memory Row -->
     <div class="memory-row">
       <button onclick="memoryClear()">MC</button>
@@ -288,6 +311,10 @@
   <script src="script.js"></script>
 </body>
 </html>
+
+
+
+
 
 
 

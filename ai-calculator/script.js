@@ -26,8 +26,12 @@ function toggleSign() { if(display.value) display.value = display.value.startsWi
 function toggleFE() { alert("F-E toggled"); }
 
 function calculate() { 
+    let expr = display.value.replace(/×/g, '*').replace(/÷/g, '/').replace(/\^/g, '**');
+    
+    // Check if the expression contains 'y =' or 'x =', if so, strip it
+    expr = expr.replace(/^[a-zA-Z]\s*=\s*/, '');
+    
     try { 
-        let expr = display.value.replace(/×/g, '*').replace(/÷/g, '/').replace(/\^/g, '**');
         let res = eval(expr);
         display.value = Number.isFinite(res) ? parseFloat(res.toFixed(10)) : "Invalid Input";
         addToHistory(expr, display.value);
@@ -131,12 +135,81 @@ function memoryAdd() { try { memory += eval(display.value) || 0; } catch {} }
 function memorySubtract() { try { memory -= eval(display.value) || 0; } catch {} }
 function memoryStore() { try { memory = eval(display.value) || 0; } catch {} }
 
-// --- Calculus & Stats Placeholders ---
-function convertDMS() { display.value = "DMS"; }
-function convertDeg() { display.value = "Deg"; }
-function calcDerivative() { alert("Derivative"); }
-function calcIntegral() { alert("Integral"); }
-function calcCombPerm() { alert("Combo"); }
+// --- Calculus Logic ---
+let currentCalcMode = "";
+
+function calcDerivative() {
+  let eqStr = display.value.trim();
+  if (!eqStr.includes('x')) { alert("Please type an equation with 'x' on the main screen first (e.g., y = x^2 + 3)"); return; }
+  
+  currentCalcMode = "derivative";
+  document.getElementById("calc-input-box").style.display = "block";
+  // Auto-fill the equation box with what is on the main screen
+  document.getElementById("calc-equation").value = eqStr; 
+  document.getElementById("calc-point").focus();
+}
+
+function calcIntegral() {
+  let eqStr = display.value.trim();
+  if (!eqStr.includes('x')) { alert("Please type an equation with 'x' on the main screen first (e.g., y = x^2 + 3)"); return; }
+  
+  currentCalcMode = "integral";
+  document.getElementById("calc-input-box").style.display = "block";
+  document.getElementById("calc-equation").value = eqStr;
+  document.getElementById("calc-point").focus();
+}
+
+function executeCalculus() {
+  let eqStr = document.getElementById("calc-equation").value;
+  let xVal = parseFloat(document.getElementById("calc-point").value) || 0;
+  
+  if (!eqStr) { display.value = "Enter Equation"; return; }
+
+  // Clean up the equation string for JavaScript eval()
+  // Replace 'x' with the value, handle implicit multiplication (2x -> 2*x)
+  let safeEq = eqStr.replace(/([0-9])([a-zA-Z])/g, '$1*$2')
+                    .replace(/\^/g, '**');
+
+  let f;
+  try {
+    f = new Function('x', `return ${safeEq};`);
+    if (isNaN(f(xVal))) throw new Error("Invalid");
+  } catch {
+    display.value = "Invalid Equation";
+    return;
+  }
+
+  let finalRes = 0;
+
+  if (currentCalcMode === "derivative") {
+    // Numerical derivative using central difference
+    let h = 0.00001;
+    let deriv = (f(xVal + h) - f(xVal - h)) / (2 * h);
+    finalRes = deriv;
+  } 
+  else if (currentCalcMode === "integral") {
+    // Numerical integration (Trapezoidal rule) from 0 to x
+    let a = 0; 
+    let b = xVal; 
+    let n = 1000;
+    let h = (b - a) / n;
+    
+    let sum = 0.5 * (f(a) + f(b));
+    for (let i = 1; i < n; i++) {
+      sum += f(a + i * h);
+    }
+    finalRes = sum * h;
+  }
+  
+  if (!Number.isFinite(finalRes) || isNaN(finalRes)) { 
+    display.value = "Math Error"; 
+  } else {
+    display.value = parseFloat(finalRes.toFixed(6));
+    addToHistory(`${currentCalcMode} of (${eqStr}) at x=${xVal}`, display.value);
+  }
+  
+  document.getElementById("calc-input-box").style.display = "none";
+}
 
 // --- Data Entry Keypad ---
 function appendData(val) { document.getElementById("raw-data-input").value += val; }
@@ -285,5 +358,9 @@ async function askAI() {
   } catch { document.getElementById("aiAnswer").innerText = "Error"; }
 }
 function clearAI() { document.getElementById("aiQuestion").value = ""; document.getElementById("aiAnswer").innerText = ""; document.getElementById("clearBtn").style.display = "none"; }
+
+
+
+
 
 
